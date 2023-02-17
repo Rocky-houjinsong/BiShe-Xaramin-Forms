@@ -19,7 +19,7 @@ namespace Demo.ViewModels
 
         public ItemsViewModel()
         {
-            Title = "Browse";
+            Title = "文本项目";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 

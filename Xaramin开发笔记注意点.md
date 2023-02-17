@@ -1,43 +1,44 @@
-​	
+# 学习资源
 
-* 在Demo中进行大部分的 .NET开发
+*  MSDN - Xamarin官方文档
 
-![image-20230215140220426](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215140220426-2023-2-1514:02:22.png)
-
-* Demo中类似 MVVM架构,界面和逻辑分离
-
-> Models 模型 
+> 学会配置 Xamarin开发环境,
 >
-> * 一种数据对象,项目中的有关,添加到里面
+> 安卓开发好久没用 ,生疏许多
+
+* 油管跟进学习 如何开始 开发和 调试 
+
+## 日志-打卡
+
+:hourglass_flowing_sand: 2023年2月15日19:44:22
+
+> * 配置好开发环境,
+> * 模拟器 的Wifi无法连接,只能换用 真机 或者 wif调试, 后来尝试  真机成功
+>   * google abd 驱动要安装, 真机本身的驱动也要安装 , 前者是 vs识别和转录代码,后者是电脑识别和转录代码
+>   * abd 这个命令行有时还是很有用的   adb help 查看文档学习和使用
+>   * 初步测试是成功 ;回去先把 文档文档学习好;
 >
-> views视图
+> **踩的坑**
 >
-> *  控件,界面等
->
-> viewModels视图模型
->
-> * View 和ViewModels 一一对应
-> * 存在着 与用户操作界面分离的代码 ,MVVM架构
-> * ![image-20230215140657216](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215140657216-2023-2-1514:06:58.png)
-
-![image-20230215140413298](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215140413298-2023-2-1514:04:14.png)
-
-----
+> 1. 项目路径 不允许有 数字,空格和 中文, 只能说英文,;不允许长路径,建议放在二级路径就可以
+> 2. 启用开发者模式,同时 VS要使用管理员模式启动
+> 3. 工作负载 需要将UWP + 移动开发 两个 都安装
 
 
 
-* ![image-20230215141031427](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215141031427-2023-2-1514:11:08.png)
+:hourglass_flowing_sand:
 
-  这里 描述的是 xaml是 一个 布局文件,里面是 资源字典,类似xml css布局的那种 ;
+* B站视频学习,了解其他 跨平台,fullter,  Xamarin的好处在于 ,核心业务使用C#编写, 在不同的平台调用各平台的 UI就可以
+* 微软 有 版本控制,这个需要注意 
 
-  程序入口点是app.xaml ,对照着安卓项目本身来看
+**学习要点**
 
-![image-20230215141308665](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215141308665-2023-2-1514:14:08.png)
+> 1. 项目模板用blank 空白模板可以学到一些东西, 用 现成的shell模板 给你打包好了,shell不能做uwp开发
+> 2. 在主项目下面写程序, 自动会加载到不同的平台 ios, android, uwp
+> 3. MainPage.xaml ,写UI的 ,之前是有 设计器/预览器, 之后被热重载替代了, 之前挺坑的,和网页设计差不多,
+> 4. StackLayout ,显示内容 以 <Label  />为例, 标签前 和见过括号前后不可以有空格
 
-![image-20230215141434254](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230215141434254-2023-2-1514:15:08.png)
+**踩坑**
 
-
-
-AppShell介绍,里面是 选择是 浮出模板内容,为整个应用程序提供了内置的样式;
-
-appshell是 我的应用程序的外壳,背景颜色,
+> 1. OPPO手机驱动老是异常这个需要在设备管理器中进行查看
+> 2. 设置- 开发者模式 中开启,并打开 USB 设备发现

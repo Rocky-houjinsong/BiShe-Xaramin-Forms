@@ -14,12 +14,12 @@ namespace Demo.Services
         {
             items = new List<Item>()
             {
-                new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." }
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第一元素", Description="这是 第一元素的  描述部分." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第二元素", Description="这是 第二元素 的描述 部分." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第三元素", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第四元素", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第五元素", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "第六元素", Description="This is an item description." }
             };
         }
 

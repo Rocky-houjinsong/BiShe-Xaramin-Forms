@@ -15,7 +15,11 @@ namespace Demo
             Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
         }
 
-        private async void OnMenuItemClicked(object sender, EventArgs e)
+        private async void OnMenuItem_LogoutClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//LoginPage");
+        }
+        private async void OnMenuItem_LoginClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("//LoginPage");
         }

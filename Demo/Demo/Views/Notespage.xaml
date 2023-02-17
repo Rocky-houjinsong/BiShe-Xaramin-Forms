@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Demo.Views.Notespage"
+             xmlns:pages="clr-namespace:Demo.Views">
+  <FlyoutPage.Flyout>
+    <pages:NotespageFlyout x:Name="FlyoutPage" />
+  </FlyoutPage.Flyout>
+  <FlyoutPage.Detail>
+    <NavigationPage>
+      <x:Arguments>
+        <pages:NotespageDetail />
+      </x:Arguments>
+    </NavigationPage>
+  </FlyoutPage.Detail>
+</FlyoutPage>
