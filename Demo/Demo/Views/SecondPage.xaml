@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Demo.Views.SecondPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Text="VisualStateManager:"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Margin="8" />
+
+            <StackLayout Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="8"
+                         x:Name="BoxStackLayout"
+                         Orientation="Vertical">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState Name="Portrait" >
+                            <VisualState.Setters>
+                                <Setter Property="Orientation"
+                                        Value="Vertical" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Landscape" >
+                            <VisualState.Setters>
+                                <Setter Property="Orientation"
+                                        Value="Vertical" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <!--HorizontalOptions属性需要设置为Start,默认为Fill-->
+                <BoxView Color="Red"
+                         WidthRequest="50"
+                         HeightRequest="50"
+                         HorizontalOptions="Start"/>
+                <BoxView Color="Yellow"
+                         WidthRequest="50"
+                         HeightRequest="50"
+                         HorizontalOptions="Start"/>
+                <BoxView Color="GreenYellow"
+                         WidthRequest="50"
+                         HeightRequest="50"
+                         HorizontalOptions="Start"/>
+            </StackLayout>
+
+            <Label  Text="ListView:"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="8" />
+            <!--ListView是专门用来显示一组数据的控件-->
+            <ListView   x:Name="PoetryListView"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        SelectionMode="None"
+                        ItemTapped="PoetryListView_ItemTapped"
+                        Margin="8">
+                <!--ItemTemplate 项目模板
+                ListView 默认绑定一个List表,没有阐述具体数据展示,就输出绑定的类名-->
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Name}"
+                                  Detail="{Binding Content}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
