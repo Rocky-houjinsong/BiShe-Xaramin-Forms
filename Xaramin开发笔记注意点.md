@@ -90,9 +90,9 @@
 
 ---
 
-## 第四版 ,讨论数据
+## **第四版 ,讨论数据**
 
-小型开发,常用的数据就2种,
+小型开发中,常用的数据类型分类 
 
 一个是 数量少,数据没有共同特征
 
@@ -115,4 +115,35 @@
 |          | 少量零星 | 大量成批    |
 | 本地存储 | 键值存储 | 数据库/文件 |
 | 远程存储 | Web服务  | Web服务     |
+
+
+
+1. 主项目 Demo中, 新建项目 ,选择Xamarin-ContentPage, 设为PreferencePage,启动页的意思
+   让它作为启动页的话,就需要在`App.xaml.cs` 中
+
+```c#
+public App()
+{
+	InitializeComponent();
+    
+    MainPage = new MainPage(); //此处修改, MainPage = new PreferencePage();
+}
+```
+
+**数据库SQLite**
+
+> 首先安装  一个工具 `DB Browser for SQLite`
+>
+> 然后 还是新建一个内容页,  DataBase.xaml
+>
+> 同理,要是运行该 数据库内容页,需要手动在App.xaml中修改 
+>
+> 2. 安装NutGet包 ,在主项目,右键选择 NutGet,添加 SQLite-net-pcl ,不要勾选预发行版本;
+>
+> 3. 使用SQLite进行 创建数据库, 使用注解 
+
+> 不同的平台,有不同的文件路径,如何保障自己的数据库文件,有效保存和查找呢?
+> 抽象出来的文件保存路径 :
+
+
 

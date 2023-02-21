@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Demo.Views.DataBase">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ScrollView Grid.Row="0" >
+                <ListView x:Name="ResultListView" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 此时编写 绑定的数据源有蓝色波浪线,去修改-->
+                            <TextCell Text="{Binding Id}"
+                                      Detail="{Binding ISFavorite}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+
+            <StackLayout    Grid.Row="1">
+                <Button Text="creat database"
+                        x:Name="CreateDatabaseButton"
+                        Clicked="CreateDataBaseButton_OnClicked"/>
+                <Button Text="insert data"
+                        x:Name="InsertDataButton" 
+                        Clicked="InsertDataButton_OnClicked"/>
+                <Button Text="read data"
+                        x:Name="ReadDataButton" 
+                        Clicked="ReadDataButton_OnClicked"/>
+                <Label x:Name="pathShow"></Label>
+
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
