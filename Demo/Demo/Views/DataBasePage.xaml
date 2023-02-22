@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BindingContext="{Binding DataBasePageViewModel, Source={StaticResource ViewModelLocator}}"
+             x:Class="Demo.Views.DataBasePage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ScrollView Grid.Row="0" >
+                <ListView x:Name="ResultListView" 
+                          ItemsSource="{Binding Favorites}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 此时编写 绑定的数据源有蓝色波浪线,去修改-->
+                            <TextCell Text="{Binding Id}"
+                                      Detail="{Binding ISFavorite}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+
+            <StackLayout    Grid.Row="1">
+                <Button Text="creat database"
+                        x:Name="CreateDatabaseButton"
+                        Command="{Binding CreateDatabaseCommand}"/>
+                <Button Text="insert data"
+                        x:Name="InsertDataButton" 
+                        Command="{Binding InsertDatabaseCommand}"/>
+                <Button Text="read data"
+                        x:Name="ReadDataButton" 
+                        Command="{Binding ReadDatabaseCommand}"/>
+                <Label x:Name="pathShow"></Label>
+
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

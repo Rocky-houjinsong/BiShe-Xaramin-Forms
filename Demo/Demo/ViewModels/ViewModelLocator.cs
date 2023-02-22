@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Demo.Services;
 using GalaSoft.MvvmLight.Ioc;
 
 namespace Demo.ViewModels
@@ -21,6 +22,8 @@ namespace Demo.ViewModels
         {
             SimpleIoc.Default.Register<MainPageViewModel>();
             SimpleIoc.Default.Register<AnotherPageViewModel>();
+            SimpleIoc.Default.Register<DataBasePageViewModel>();
+            SimpleIoc.Default.Register<IFavoriteStorage, FavoriteStorage>();
         }
         // 借助字段MainPageViewModel进行获取该实例中的值.  
         public MainPageViewModel MainPageViewModel =>
@@ -28,6 +31,9 @@ namespace Demo.ViewModels
 
         public AnotherPageViewModel AnotherPageViewModel =>
             SimpleIoc.Default.GetInstance<AnotherPageViewModel>();
+
+        public DataBasePageViewModel DataBasePageViewModel =>
+            SimpleIoc.Default.GetInstance<DataBasePageViewModel>();
 
     }
 }

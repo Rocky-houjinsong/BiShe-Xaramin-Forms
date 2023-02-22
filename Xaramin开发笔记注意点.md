@@ -88,6 +88,18 @@
 
 
 
+:hourglass: 2023年2月22日14:46:17 
+
+主要学习 第六章合集 , 全部学完,并整理出 和项目demo
+
+我掌握的是 MVVM+IServices 流程如何运作 ;
+
+View 界面 控件先基础布置好, 数据展示 和 方法调用 , 转移到 ViewModel中,
+
+数据 承接 有 Model完成 ,但 ,ViewModel只做 创建连接这一件事  但 连接数据库 这件事 它不管,所以 我 需要引入 连接数据库的字段,放在Services中 , 实现这个接口, 由这个 实现类完成连接 
+
+
+
 ---
 
 ## **第四版 ,讨论数据**
@@ -213,7 +225,9 @@ View 仅仅是关注了 这个监听事件而已
 
 # 1,2 3 讲述 控件,主要了解 常用控件的 属性设置就可以 
 
+---
 
+略
 
 # 4  Managing Data ,管理数据
 
@@ -225,7 +239,7 @@ View 仅仅是关注了 这个监听事件而已
 
 ---
 
-
+略
 
 
 
@@ -349,7 +363,7 @@ namespace Demo.Views
 
 
 
-
+略
 
 
 
@@ -404,9 +418,10 @@ namespace Demo.Views
 > 2. 在ViewModels文件夹中 ,新建 DataBasePageViewModel.cs类文件,编写业务逻辑 ,3个功能编写完成  :pushpin: 只负责处理数据 , 连接数据库 还需他人完成
 > 3. Services文件夹中 , 新建 `Code`,选择 接口`interface` , 命名 `IFavoriteStorage.cs`
 > 4. Services文件夹中, 新建 `FavoriteStorage.cs`文件 实现上述接口
-> 5.  `DatabasePageViewModel.cs` 调用 `FavoriteStorage.cs`   **步骤4的功能 辅助完成步骤2**
+> 5. `DatabasePageViewModel.cs` 调用 `FavoriteStorage.cs`   **步骤4的功能 辅助完成步骤2**
+> 6. Views文件夹内,创建内容页`Content Page`   `DataBasePage.xaml`
 
-
+## 详细补充
 
 **上述步骤 记录补充** 
 
@@ -546,3 +561,108 @@ public async Task InsertDataAsync(Favorite favorite)
 > * 将返回值存在 变量 `results`中 ,需要将其变量显示在前端,  使用可绑定属性  显示一条数据 可以使使用可绑定数据
 >   但是 ,要显示一组数据 ,需要一个外部的 **主项目**下导入 包 `NuGet` 搜索 `mvvmhelpers` ,找到`Refractored.MvvmHelpers`   作者 `James Montemagno` 在Xamarin项目中层级很高
 > * 包中 提供特殊的集合,
+
+ **在类中声明一个 类型是xxx的 属性, 只有 读取功能,初始化时传入Favorite类型的实例**
+
+```C#
+public ObservableRangeCollection<Favorite> Favorite {get;} =
+	new ObservableRangeCollection<Favorite>();    
+```
+
+```c#
+public ObservableRangeCollection<Favorite> Favorites  =
+            new ObservableRangeCollection<Favorite>();
+```
+
+> ==二者不同含义,前者初始化之后,只读取属性值,后者,每次查看该属性都初始化一次==
+
+之后 使用该属性,在读取方法中 ,传入进入
+
+6. 创建 DataBasePage 这个是View
+
+<iframe src="//player.bilibili.com/player.html?aid=802860623&bvid=BV1Sy4y1s7VE&cid=329311995&page=8" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> 该视频讲解创建View 
+>
+> **步骤**
+>
+> * 有View ,就要关联 ViewModel  
+>
+>   * > 就是在ViewModelLocator进行注册
+>     > 在 SimpleIoc 注册(构造方法中编写) ,并声明一个相应的属性
+>
+> * 在DataBasePage.xaml中 绑定 
+>
+>   * >  标签  `<ContentPage>`中 进行 编写 
+>     >
+>     > ```html
+>     > < BindingContext="{Binding DataBasePageViewModel, Source={StaticResource ViewModelLocator}}" >
+>     > ```
+>     >
+>     > ==花时间 ,将VS 和ReSharper的智能感知调通,是很值得的事情==
+>
+> * Button按钮 方法 Command到 ViewModel中,  **和原本的比较就是 ,控件事件方法 改为 绑定 ViewModel中的方法**
+>
+> * ListView中 数据展示,数据源 ItemSource ,绑定 为`Favorite` , 和原本比较就是在 对应的cs文件中 ,手动编写数据源绑定
+>
+> * 手动测试 ,需要在`App.xaml` 文件中,修改 MainPage的实例对象
+
+  
+
+:warning: 此时 ,视频中运行报错  02:05
+
+<iframe src="//player.bilibili.com/player.html?aid=802860623&bvid=BV1Sy4y1s7VE&cid=329312205&page=9" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> `DataBasePageViewModel`类中 字段 `_FavoriteStorage` 没有赋值
+>
+> :pushpin: 直接 new ,有很多弊病,最好使用依赖注入
+>
+> 通过构造函数,进行依赖注入
+>
+> **既然 必须传入 Favorite,才能构造函数,使用 _favorite, 那谁去给呢?**
+>
+> ==有SimpleIoc来完成== 
+>
+> 在 ViewModelLocator构造方法中 ,注册 ,说明谁才是 Favorite
+>
+> IFavoriteStorage 是需要的,但它是接口,无法实例化,需要说明它的实现
+>
+> ```
+> SimpleIoc.Default.Register<IFavoriteStorage, FavoriteStorage>();
+> ```
+>
+> > **讲解:**
+> >
+> > 当实例化 DataBasePageViewModel以便调用属性时,发现 需要传入参数 IFavoriteStorage,
+> >
+> > 就去寻找 ,在注册中发现,该接口的声明是 FavoriteStorage,然后组合 进行依赖注入 ;
+> >
+> > ==SimpleIoc,基于构造函数进行判断==, 特点,非常明确
+> >
+> > ==SpringIoC非常隐晦,到处都是@==  但是 ,SimpleIoc 只能做轻量级的小东西
+> >
+> > 既不要底层手动实现,也不要企业级全自动实现,还是坚持 轻量级半自动化实现;
+> > 充分掌控整个依赖注入过程,同时也屏蔽足够的细节
+
+## 总结
+
+<iframe src="//player.bilibili.com/player.html?aid=802860623&bvid=BV1Sy4y1s7VE&cid=329312360&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> 最后一个视频,讲解MVVM + IServices 之间 如何工作和互动
+> ==复杂,但是不难== ==工作量是有,思考量不多== 
+
+![image-20230222142147619](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230222142147619-2023-2-2214:21:48.png)
+
+> ViewModel 执行业务,但是什么活也不干
+> 只做 最基本,符合业务本身的事情,其他的就找人去做,委托给接口,但接口没法干活,还是给 实现类
+> 所以说,实现类是 ViewModel的工具人
+> View主动找,去联系,才能找到ViewModel,
+> 但是 ,ViewModel 只发布,办事的实现类,接口都是有ViewLocator进行 维护和寻找,,也是一个工具人
+
+
+
+---
+
+![image-20230222143003827](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230222143003827-2023-2-2214:30:05.png)
+
+> 描述 ,View工作,如何去联系 ViewModel 
