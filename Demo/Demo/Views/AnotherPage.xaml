@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BindingContext="{Binding AnotherPageViewModel, Source= {StaticResource ViewModelLocator}}"
+             x:Class="Demo.Views.AnotherPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label> Another Page.</Label>
+            <Label FontSize="48"
+                   Text="{Binding Result}"
+                   x:Name="ResultLabel" />
+            <Button x:Name="ClickMeButton"
+                    FontSize="48"
+                    Command="{ Binding HelloCommand}"
+                    Text="Click Me!" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
