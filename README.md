@@ -104,4 +104,10 @@ View 界面 控件先基础布置好, 数据展示 和 方法调用 , 转移到 
 
 <iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329312439&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-> 主要学习 7 Database 合集内容
+> 主要学习 7 Database 合集内容 到第49集
+
+:hourglass: 2023年2月24日15:26:22 
+
+> 预计能学习 1个半小时 
+>
+> 学习结束  2023年2月24日17:29:28   :hourglass: 2个小时 

@@ -605,7 +605,7 @@ public ObservableRangeCollection<Favorite> Favorites  =
 
 ![image-20230223151054486](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230223151054486-2023-2-2315:10:55.png)
 
- id从1000开始,且不连续,最后是layout属性
+ ==id从1000开始,且不连续==,最后是layout属性
 
 ```sqlite
 select distinct layout from works
@@ -613,12 +613,15 @@ select distinct layout from works
 
 查看layout属性就 indent,center两种值,
 描述布局方式,有的居中 ,居左
+属性很多,没有全部使用
+
+* 从评论区下载到示例数据库,存放到文件夹`DataBases`中
 
 ---
 
 <iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329312719&page=3" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-> P3, 48 正式创建数据库
+> P3, 48 正式创建数据库 进行开发 
 >
 > 1. 数据表读到内存,或者说,**创建类对象,将其映射起来**
 
@@ -628,7 +631,7 @@ select distinct layout from works
 
 示例中的库是 今日诗词中的库,第三方的,它的数据库就是SQLite
 
-1. 创建类,映射
+1. 创建类,进行映射
    * 在Model文件夹中,新建类`class` 类名`Poetry.cs`
    
    * 先public ,
@@ -650,7 +653,7 @@ select distinct layout from works
        >
        > 因为大小写无法映射, 添加标记 `[SQLite.Column("id")]`
      
-     将所有的 属性进行 配置  08:15
+     将所有的 属性进行 配置  08:15   
 
 
 
@@ -665,7 +668,7 @@ select distinct layout from works
 > * 以Layout属性 讲解 字符串容易出错,且系统无法辅助检查
 >   ==如何解决这个问题?==   **最基本的要求就是 尽量不要写字符串**
 > * 写死字符串, 写成该类常量   => 脚本语言 编译不给你提示,运行报错才给提示
->   编译器 和 类型 本身就是一种文档
+>   编译器 和 类型 本身就是一种文档   **==>** ==永远不要手写代码string,== 使用复制
 
 
 
@@ -675,4 +678,142 @@ select distinct layout from works
 
 
 
-> 
+>  以列表的形式 查看收藏的诗词,   :warning: 了解到 `领歌` 这个 看板网站, 可以体验体验
+> 要显示一个预览,preview ==> 属性没有priview; 要么自己写一个属性,要么在显示的时候生成一个priview 
+>
+> ==做法:由Model替我们生成一个priview==	
+
+> Priview如何生成?
+> 因为 数据库没有 该属性,所以它在 类中,以属性的形式进行计算出来 
+> 其次, 需要将该属性给忽略掉 `Ingore` 这样 `Sqlite-net` 就不会处理这个属性了  使用特殊标注进行完成 
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329313119&page=6" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P6 51 设计 提供 相关的服务接口
+>
+> :star: 重点在于 设计的动态查询 接口
+
+
+
+> **步骤:**
+>
+> 1. 在`Services` 文件夹中 添加新建项 `Code` ->`Interface` ==> `IPoetryStorage.cs`
+>    * 接口 内实现  初始化数据库 ==> 将已有的数据库 重新部署  :warning: 部署操作,是文件,就一定是 Async
+>    * 增删改查 操作
+
+
+
+1. 初始化数据库
+
+> 不能每一次 启动都初始化, 而是要 判断 ,再决定是否要初始化	Task 进行异步操作
+>
+> * 动态查询
+>
+> > 这个不写死,限制查询
+> >
+> > ==查询就要涉及到条件,那么,条件如何传递==
+> >
+> > 动态查询条件 ==> Expression,导入的 using System.Linq.Expressions;
+> >
+> > 表达式本身是一个函数,,接收一个Poetry的参数,返回一个bool类型的值, 
+> >
+> > 翻页功能,跳过多少,剩下多少 , skip,take; 返回 20~30的结果,跳过skip20 ,返回take10
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329313369&page=7" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P7 52  去实现该接口; 但主讲代码规范问题
+
+> **步骤:**
+>
+> 1. 在`Services`文件夹下 添加 `PoetryStorage.cs`类
+>    *  继承该接口,点击`灯泡` 自动实现该接口方法 共计4个
+>
+> ==代码书写规范== 很重要 
+>
+> 1. 命名规范
+>
+>    * 怕死口 ,首字母大写,公开的成员,都是 首字母大写
+>
+>    * 类的 私有成员,都是下划线开头
+>
+>    * 胎膜儿,函数的成员,前面不加下划线
+>
+>    * 接口以I开头
+>
+> 2. 排版规范
+>    * kotlin 和微软的规范,自己选一个
+>    * 一行语句,只做一件事
+>    * 每次缩进一个tab 
+>    * ==大型的公司,代码检查,不规范,真的要扣工资==
+> 3. 注释
+> 4. 功能分区  使用 //*******  还有 regin标记来实现,可以写成模板
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329313604&page=8" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P8 53 ,实现上述接口 
+
+
+
+搞注释, 意义不明确 时候需要写返回值;
+
+NET 实现接口不会自动将注释 copy过来,
+
+规范的代码,能增加写代码的幸福感
+
+从上到下实现
+
+**排序顺序**  服务类的都是公开变量,私有变量 继承方法,公开方法,私有方法 ==按照这个方法去写服务类==
+
+1. **初始化时诗词存储**
+
+> 固定要做的事情
+>
+> 创建数据库文件,[文件名, 文件路径] 每次都要用,就在类中设为私有变量 
+>
+> 数据路连接,第一次是 讲数据库连接, 第二次是将MVVM ,连接自己新建的文件,这是第三次
+>
+> Combine(  GetFolderPath(Environment.SpecialFolder.LocalApplicationData) 确定路径,获取路径,拼接路径
+
+> `const`  和  ` static readlyonly`  这个两个比较 
+>
+> ==C#语法讲明白的== 一个是 永远不变,一个是可升级的版本号 
+>
+> 常量 不可计算,是写死的  ; 是常量,又可以计算,那么就使用 `static  readonly`
+>
+> ==`static` 是属于类的,不再属于成员了==
+
+**编译时常量,运行时常量 ** 那是真常量 ,
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329313769&page=9" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P9 54  开始执行初始化操作,此时 还在为初始化进行前置编写
+>
+> 重点阐述 **如何打包资源到项目中**
+
+> ==之前是 自己主动创建数据库文件,现在是预设数据库文件,如何部署到客户机器上呢?==\
+>
+> 按照 ,上面 获取 文件路径的方法,客户机器上面肯定是没有该文件的
+>
+> 因此 **如何将现有的数据库文件,部署到客户的计算机上**
+>
+> * 选中文件,复制
+> * 在解决方法的主项目上,点击右键,选择粘贴
+> * 导入到项目之后,在该文件,点击属性,弹出属性窗口
+> * `Build Action` 选择嵌入式资源 `Embedded resource` 
+
+![image-20230224172330556](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230224172330556-2023-2-2417:23:32.png)
+
+> **验证是否导入成功**
+>
+> 在解决方案的主项目,也就是被导入的项目,右键,选择 `Edit Project File`  ,在标签  `ItemGroup` 里面就有 描述
+>
+> ==这个不好调试,或者说 很难发现==
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329314003&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P10 55
+
