@@ -792,11 +792,13 @@ NET 实现接口不会自动将注释 copy过来,
 >
 > 重点阐述 **如何打包资源到项目中**
 
-> ==之前是 自己主动创建数据库文件,现在是预设数据库文件,如何部署到客户机器上呢?==\
+>  :interrobang:     ==之前是 自己主动创建数据库文件,现在是预设数据库文件,如何部署到客户机器上呢?==\
 >
 > 按照 ,上面 获取 文件路径的方法,客户机器上面肯定是没有该文件的
 >
 > 因此 **如何将现有的数据库文件,部署到客户的计算机上**
+>
+> :key:
 >
 > * 选中文件,复制
 > * 在解决方法的主项目上,点击右键,选择粘贴
@@ -809,11 +811,269 @@ NET 实现接口不会自动将注释 copy过来,
 >
 > 在解决方案的主项目,也就是被导入的项目,右键,选择 `Edit Project File`  ,在标签  `ItemGroup` 里面就有 描述
 >
-> ==这个不好调试,或者说 很难发现==
+> ==这个不好调试,或者说 很难发现 ==    :warning:  视频66集 发现 自己没有这个东西,回头翻找
+
+![image-20230226022505273](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226022505273-2023-2-2602:25:06.png)
 
 
 
 <iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329314003&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-> P10 55
+> P10 55  打开链接 操作数据库
+> 			打包好的资源,部署到用户的机器上
 
+**文件流** :warning: 用完必须关闭 
+
+> 常见做法就是  dbFileStream.Close();
+>
+> 微软做法: 使用using(需要关闭的语句操作) ,Java中使用try操作
+
+解读:
+
+把目标文件打开成为文件流,把 来源文件打开, 将目标文件内容拷贝到来源文件中
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329314003&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P11 56 
+
+
+
+已经拷贝过去,,需要考虑一个问题,版本问题,以后若是升级了,如何确定 用户机器中的当前数据库是哪个版本的呢?
+
+**答案** :key: 存储 ,   由  提供数据库版本号 ,在`IPoetryStorage` `文件`  里面 ,提供版本号 ==不在接口里面,是在文件里面提供==
+
+​		同时 ,将版本信息 存放到 数据库文件也是一种解决方案
+
+> 定义一个 新的公开静态类 `PoetryStorageConstant`  含义  是  与 诗词存储有关的常量,
+>
+> ==当一个类 被`static`所修饰,就无法 被 `new` 了,就没有实例了==;
+
+> **重点:**
+
+```c#
+public const string VersionKey =
+            nameof(PoetryStorageConstants) + "." + nameof(Version);
+//不是计算得到的,是硬编码的,在编译阶段 变成字符串
+```
+
+重新更正接口文件, 返回 部署数据库时, 记录 版本号信息, 在偏好存储中介意 `Preference`存储
+
+以 key文件,version为值,保存版本信息;
+
+:pushpin:  有了版本号`version` 在 是否初始化判定就非常简单 
+
+```c#
+Preferences.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion) ==
+            PoetryStorageConstants.Version;
+```
+
+<iframe src="//player.bilibili.com/player.html?aid=845292633&bvid=BV1t54y1j76Y&cid=329314506&page=12" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> p12 57
+
+> **步驟：**
+>
+> 1. 在私有变量 代码段,添加 字段和属性来操作`数据库连接`
+
+```c#
+await Connection.Table<Poetry>()
+                .FirstOrDefaultAsync(p => p.Id == id);
+```
+
+* 打开数据库表`Poetry`
+* 根据设定的`条件`进行查询,若无返回 默认 null
+
+> 和使用Springboot 差不多,但是不用 磨磨唧唧在那里写 SQL语句 ,能看到细节,可以学,但不至于 全部都手写
+
+```c#
+public Task<IList<Poetry>> GetPoetriesAsync(Expression<Func<Poetry, bool>> where, int skip, int take)
+```
+
+将`where`前面自动添加的`@` 进行刪除
+
+------
+
+## 合集总结
+
+* 现代化软件开发都提供了 `资源嵌入`机制 到客户的机器上,并释放出来
+* 基于版本号来记录 `版本`的方法 ,记录到`Preference`中
+* 读取 数据的方法,里面存入 lambada表达式
+  * 返回一组,其他平台 使用翻页工具来制作
+
+---
+
+> :interrobang: **如何判断自己编写的业务逻辑代码是否可以满足需求**
+>
+> 一般都是借助UI ,启动模拟器 来进行判定是否成功,费时费力,
+>
+> :key: **使用单元测试**
+
+每写一个类,就把 这个类的单元测试给制作了,确保 每一个类都能顺利通过检查
+
+# 9 Unit Testing Database
+
+---
+
+> 承接第7章,解决如何 进行单元测试问题
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329315573&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> **步骤:**
+>
+> 1. 新建一个单元测试项目 `solution` 解决方案上面,右键点击添加,选择`New Project`, 搜索 `nunit` 选择 `C#的.NET Core的 NUnit Test Porject`
+>    团队开发时,一定要在 windows端新建该项目,Mac有时会出现错误
+>    命名`Demo.UnitTest`
+> 2. 点击测试`Test` 选择 测试浏览器`Test Explorer` 
+>    可能会弹到副屏,   窗口展开,看到里面具体的默认的Test1方法,右键点击运行就可以跑单元测试 `变绿` 就是说明 测试通过
+>
+> > 单元测试约定 :
+> >
+> > `待测试的类`所在文件路径 和  在`测试类`中是一样的;
+> >
+> > `待测的函数` 和`测试函数` 名称一样  `InitializeAsync` ==>`TestInitializeAsync`
+> >
+> > **步骤**
+> >
+> > 
+> >
+> > 即 在`Demo`项目中是`Services`文件下 `PoetryStorage.cs` 
+> > 则 在`Demo.UnitTest`项目新建`Services`文件夹,新建`PoetryStorageTest.cs`
+> >
+> > 2. public 进行修饰 
+> > 3. 查询和选择两个函数测试容易,重点在于2个部署函数的测试
+> >    ==里面有一系列的连环坑,特别的多==
+> >    * 添加 标记[Test] 选择==NUnit.Framework==的Test 
+> >    * 在这个函数里面进行测试
+> >    * 初始化数据库,说明这个数据库还不存在,需要==断定,这个数据库真的不存在==
+> >      * 测试 常用的 ,使用`断言` 路径不存在,文件就不存在
+> >      * :interrobang: 路径`PoetryDbPath` 设置为`Private`, 如何在 Test类中访问呢?
+> >        :key: 暂时修改为 `public`进行修饰
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329315791&page=2" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P2 65集
+
+> **步骤:**
+>
+> 承接叙述 
+>
+> 1. 首先在`PoetryStorage.cs`文件中,将 `PoetryDbPath` 属性修改为公开`public`变量
+> 2. 断定文件不存在,在`TestInitializeAsync` 方法内编写 
+>    * 首先在`Demo.NUnitTest`项目找到 依赖 `dependencies`,选择`添加现有项目``Demo`
+>    * 使用断言`Assert`  ,设为 `IsFalse`
+> 3. 在 `Test Explorer` 窗口选择测试该方法,`绿色` 通过编译
+>    若是将断言改为`IsTrue` 就会出错 
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316128&page=3" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P3 66 ,接着测试上面的方法 
+
+> **步骤:**
+>
+> 1. await 初始化步骤 判定成功 `IsTure`	
+>
+>    ```c#
+>     Assert.IsFalse(File.Exists(PoetryStorage.PoetryDbPath));
+>                var poetryStorage = new PoetryStorage();
+>                await poetryStorage.InitializeAsync();
+>                Assert.IsTrue(File.Exists(PoetryStorage.PoetryDbPath));
+>    ```
+>
+>    :warning: 此时 测试显示 `空指针异常`错误	  ==非常难找==,跳转异常语句进行查看
+>
+>    ​           
+>
+>    ```c#
+>                    await dbAssertStream.CopyToAsync(dbFilesStream);// 将目标文件拷贝到来源文件
+>    ```
+>
+>    一般只有 变量空指针,系统变量不会
+>    :interrobang: 如何 查看上述2个变量,哪一个是空指针呢?
+>
+>    :key: 使用 `调试` 断点查看 
+>
+>    * 断点设置在该行,同时在测试窗口 不再选择`Run` 选择`Debug`
+>
+>      * 断点没有命中,又出错了 ==> 卡在 `IsFalse`上了!!
+>
+>      * 那就在 `IsFalse`上面进行 设置`断点`  
+>
+>      * 此时再次运行 debug,在 路径里面生成的数据库文件是 测试生成的 ,大小是`0k` 里面根本没有数据
+>
+>        > Xamarin应用程序的 `LocalApplicationData` 路径很深 ,走的是应用程序
+>        >
+>        > 单元测试的`LocalApplicationData` 路径浅,走的是.NET Core ,二者是不同的平台 ,
+>        > ==.NET core是系统一级平台,和系统是同等权重的没有屏蔽和封装;,UWP是二等公民,做了很多屏蔽和分装==
+>
+>      * 视频演示 在UWP项目下,就把该单元测试生成的数据库文件删除,并移除此处断点, 重新debug,到 双变量语句地方
+>
+>      * 发现是 `dbAssertStream`是空异常 
+>
+>      :interrobang: 文件不存在? 但是上面程序能执行,说明是创建的啊 ,如何调试?
+>
+>      :key:  步骤如下
+>
+>      > 1. 在`Immediate Windows` 窗口中 ==> `调试` --> `窗口` --> `即时` ,快捷键 `Ctrl+D,I` 
+>      >
+>      > 2. 输入 `Assembly.GetExecutingAssembly().GetManifestResourceNames()`  查看发现 `Demo.poetydb.sqlite3`
+>      >
+>      >    * DbName叫做`PoetryDb.sqlite3`
+>      >
+>      >    * 说明,`.NET`在你不知情的情况下,添加了一个项目名
+>      >      ==引入嵌入资源,需要资源名+项目名==  
+>      >
+>      >      :interrobang: 那如何解决呢?
+>      >
+>      >      :key: **稍微修改 Demo文件** 
+>      >
+>      >      > Demo项目本身 ,右键, 选择`编辑项目文件` 
+>      >      >
+>      >      > 在`EmbeddedResource`标签里面
+>      >
+>      >    今日编译失败  距离上次 真机编译过去很久, 这次 发现报错 
+>      >
+>      >    :interrobang:  刚刚 报错 `OpenSilver.MvvmlightLibs` 引用失败,,我寻思这样 会不会和 视频不一样,因为原来的`MvvmLight` 弃用不更新的缘故呢 ,没想到删除 using引用,再重新导入,就好了!!
+>      >
+>      >    > 接着调试, 在资源文件中修改 如下
+>      >    >
+>      >    > ```xaml
+>      >    > <EmbeddedResource Include="poetrydb.sqlite3">
+>      >    > 			<LogicalName>poetrydb.sqlite3</LogicalName>
+>      >    > 		</EmbeddedResource>
+>      >    > ```
+>      >    >
+>      >    > :interrobang: 再次进行单元测试 run ,还是报错 ==> 但是在路径中发现, 该文件 终于不是 空文件 
+>      >    >
+>      >    >  :warning: 说明数据库文件已经正常被部署过来
+>
+> 2. 
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316507&page=4" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+>  P4 67 如何解决 
+
+
+
+**我的Demo项目zhiyouAndroid平台** 运行报错是这个 
+
+![image-20230226025430688](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226025430688-2023-2-2602:54:31.png)
+
+![image-20230226025617936](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226025617936-2023-2-2602:56:18.png)
+
+
+
+> 这个 跟着 视频流程走,应该是 Android的问题, 忽略 ;
+>
+> 回归到视频的问题 :
+
+![image-20230226025811564](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226025811564-2023-2-2602:58:13.png)
+
+之前在 主项目, ios,android,uwp各个项目下调用都可以使用
+
+能测的才能测,不能测试的 压根就测试不了 `Preferenc` 就无法测试  
+
+:interrobang: 那如何测试? 如何剥离 出去 不能测试的代码呢?
+
+04:31 

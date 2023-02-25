@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SQLite;
+﻿using SQLite;
 
 namespace Demo.Models
 {
@@ -10,6 +7,7 @@ namespace Demo.Models
         // Attribute
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
         public bool IsFavorite { get; set; }
     }
 }

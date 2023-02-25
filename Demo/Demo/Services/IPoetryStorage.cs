@@ -42,4 +42,24 @@ namespace Demo.Services
             Expression<Func<Poetry, bool>> where, int skip, int take);
 
     }
+    /// <summary>
+    /// 诗词存储常量.
+    /// </summary>
+    public static class PoetryStorageConstants
+    {
+        /// <summary>
+        /// 诗词数据库版本号
+        /// </summary>
+        public const int Version = 1;
+        /// <summary>
+        /// 默认的诗词数据库版本号.
+        /// </summary>
+        public const int DefaultVersion = 0;
+        /// <summary>
+        /// 诗词数据库版本号键
+        /// </summary>
+        public const string VersionKey =
+            nameof(PoetryStorageConstants) + "." + nameof(Version);
+        //"PoetryStorageConstants.Version"  不是计算得到的,是硬编码的,在编译阶段 变成字符串
+    }
 }

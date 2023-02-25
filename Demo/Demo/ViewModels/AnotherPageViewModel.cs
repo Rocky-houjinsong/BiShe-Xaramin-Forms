@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using GalaSoft.MvvmLight.Command;
 
+//using GalaSoft.MvvmLight.Command;
+
 namespace Demo.ViewModels
 {
     public class AnotherPageViewModel : INotifyPropertyChanged
