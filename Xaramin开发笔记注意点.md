@@ -1052,7 +1052,7 @@ public Task<IList<Poetry>> GetPoetriesAsync(Expression<Func<Poetry, bool>> where
 
 <iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316507&page=4" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
->  P4 67 如何解决 
+>  P4 67 如何 剥离 不可测试代码,变为 可以测试 ;
 
 
 
@@ -1076,4 +1076,377 @@ public Task<IList<Poetry>> GetPoetriesAsync(Expression<Func<Poetry, bool>> where
 
 :interrobang: 那如何测试? 如何剥离 出去 不能测试的代码呢?
 
-04:31 
+04:31  
+
+> 1. 新建一个接口,把`Preference` 功能复刻进去
+>
+>    1. interface 里面不用写 public
+>    2. 接口的 set 和get方法 规定完成;
+>    3. 该接口 和原来的`Preference` 是一模一样的
+>
+>    > 这样 ,就不再需要`Preference`类方法,而是使用`PreferenceStorage`类方法
+>
+>    :interrobang: 你需要一个`preferencestorage`这样的类型,如何说明呢?
+>
+>    :key: 在 构造函数里面说明
+>
+> 2. 在 `PoetryStorage`中 构造方法声明了`IPreferenceStorage` ,==将上面的 `Preference` 变成`PreferenceStorage`
+
+```c#
+    public async Task InitializeAsync()
+        { // 打开文件,传递路径 将需要关闭的初始化 扔到using中,文件操作 必须要关闭,using就是该效果
+            using (var dbFilesStream = 
+                   new FileStream(PoetryDbPath,FileMode.Create))
+                // dbAssertStream 数据资源流
+            using (var dbAssertStream = Assembly.GetExecutingAssembly()
+                       .GetManifestResourceStream(DbName))
+            {
+                await dbAssertStream.CopyToAsync(dbFilesStream);// 将目标文件拷贝到来源文件
+            }
+
+            Preferences.Set(PoetryStorageConstants.VersionKey, PoetryStorageConstants.Version); 
+        }
+
+        /// <summary>
+        /// 诗词存储是否已经初始化.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInitiallized() =>
+            Preferences.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion) ==
+            PoetryStorageConstants.Version;
+```
+
+```c#
+public async Task InitializeAsync()
+        { // 打开文件,传递路径 将需要关闭的初始化 扔到using中,文件操作 必须要关闭,using就是该效果
+            using (var dbFilesStream = 
+                   new FileStream(PoetryDbPath,FileMode.Create))
+                // dbAssertStream 数据资源流
+            using (var dbAssertStream = Assembly.GetExecutingAssembly()
+                       .GetManifestResourceStream(DbName))
+            {
+                await dbAssertStream.CopyToAsync(dbFilesStream);// 将目标文件拷贝到来源文件
+            }
+//修改的地方
+            _preferenceStorage.Set(PoetryStorageConstants.VersionKey, PoetryStorageConstants.Version); 
+        }
+
+        /// <summary>
+        /// 诗词存储是否已经初始化.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInitiallized() =>
+            //修改的地方
+            _preferenceStorage.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion) ==
+            PoetryStorageConstants.Version;
+```
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316738&page=5" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P5 68 
+
+```c#
+[Test]
+        public async Task TestInitializeAsync()
+        {
+            Assert.IsFalse(File.Exists(PoetryStorage.PoetryDbPath));
+            var poetryStorage = new PoetryStorage();  //这里 构造需要传入参数 Ipreferencestorage
+            await poetryStorage.InitializeAsync();
+            Assert.IsTrue(File.Exists(PoetryStorage.PoetryDbPath));
+        }
+```
+
+> :warning: `IPreferencestroage`接口没有实现
+>
+> :interrobang:  如何 声明该接口呢?  
+>
+> :key: :star:  mock出来, 通过mock工具生成一个mock对象 ,借助这个mock对象来实例化接口
+>
+> ​		==不借助实现类的实例对象来实现接口==
+>
+> ```c#
+> using Moq;
+> var preferenceStorageaMock = new Mock<IPreferenceStorage>();
+> var mockPreferenceStorage = preferenceStorageaMock.Object;
+> ```
+>
+> > 再将 生成的sql文件删除,进行测试,就成功了
+> >
+> > :star: 而我将 其注释,我的也成功了,因为我是在Android平台下测试的 ` Assert.IsFalse(File.Exists(PoetryStorage.PoetryDbPath));
+>
+> **单元测试 能够自动化重复运行 ,不能每次都手动进行删除文件再进行测试吧 ** :interrobang: 如何解决?
+>
+> :key:  MOY7NS35PN4PP2IZ 
+
+运行之前和运行之后 都执行一遍 打上2个标签,在任何一个单元测试之前和之后先运行 ;
+
+**上述就是一个完整函数的完整测试周期就完成了**
+
+待测函数  和测试函数 加起来 大概20行
+
+![image-20230226170032863](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226170032863-2023-2-2617:00:36.png)
+
+![image-20230226170047609](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226170047609-2023-2-2617:00:48.png)
+
+> 1. 单元测试会有 副作用,第一遍通过,第二遍就不通过,清理副作用 进行自动化完成 
+> 2. 不是什么程序 都能测试, 必须把不可测试代码进行剥离 ; ,剥离之后,使用`mock`工具进行代替
+> 3. 实际上 和  理论上 还是很有区别的 ;
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316892&page=6" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P6 69  代码覆盖率 , 微软原生开发工具 做不来`代码覆盖率`  **必须依赖第三方工具**
+>
+> 提升测试 的 覆盖率
+
+
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329316990&page=7" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> p7 70 验证保存的版本号是否正确
+>
+> :interrobang:  如何验证 它 是否执行  set函数 以保存 版本号呢? 
+>
+> :key:  mock工具 ,不仅可以凭空产生对象还可以验证你是否调用了该对象
+
+```c#
+  preferenceStorageaMock.Verify(
+                p => p.Set(PoetryStorageConstants.VersionKey,
+                    PoetryStorageConstants.Version), Times.Once);
+```
+
+> Mock工具确认, 是否调用set函数,传入指定参数,而且只执行了一次 
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329317184&page=8" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+>P8 71 测试 `IsInitiallized`函数 
+
+
+
+待测试的函数 就是 调用get方法比较版本信息, 就需要 给一个`preferencestorage`
+Mock工具产生对象,也能mock函数,
+
+```c#
+/// <summary>
+        /// 测试诗词存储是否已经初始化.
+        /// </summary>
+        public void TestIsInitialized()
+        {
+            var preferenceStorageMock = new Mock<IPreferenceStorage>();
+            preferenceStorageMock.Setup(p =>
+                    p.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion))
+                .Returns(PoetryStorageConstants.Version);
+            var mockPreferenceStorage = preferenceStorageMock.Object;
+            var poetryStorage = new PoetryStorage(mockPreferenceStorage);
+            Assert.IsTrue(poetryStorage.IsInitiallized());
+        }
+```
+
+> 1. 建立对象mock
+> 2. 设置对象mock的setup方法,调用里面的 方法,就返回值
+> 3. 建立mock对象
+> 4. 断言测试
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329317511&page=9" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P9 72 测试查询
+
+要测试查询,就得调用 `Initialized` 连接数据库 来迁移数据库,还得给构造函数提供参数 
+==> 后面 测试查询一组 也得这样操作 ,那么 需要重复使用的代码,需要独立出来 ;
+
+**步骤:**
+
+1. 在Nunit项目新建文件夹`Helpers` 创建一个新的类`PoetryStroageHelper`
+2. 在类中 :获得一个已经调用 连接数据库函数的诗词存储
+
+> 将删除数据库等操作 ,也集中到 帮助类中进来 , 单一职责原则
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329317784&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P10 73 
+
+
+
+```c#
+/// <summary>
+        /// 测试获取一个诗词
+        /// </summary>
+        /// <returns></returns>
+        [Test]
+        public async Task TestGetPoetryAsync()
+        {
+            var poetryStorage =
+                await PoetryStorageHelper.GetInitializedPoetryStorageAsync();
+            var poetry = await poetryStorage.GetPoetryAsync(10001);
+            Assert.AreEqual("临江仙 · 夜归临皋", poetry.Name);
+        }
+```
+
+:warning: 报错 
+
+> 消息: 
+> TearDown : System.IO.IOException : The process cannot access the file 'C:\Users\hp\AppData\Local\poetrydb.sqlite3' because it is being used by another process.
+>
+>   堆栈跟踪: 
+> --TearDown
+> FileSystem.DeleteFile(String fullPath)
+> File.Delete(String path)
+> PoetryStorageHelper.RemoveDatabaseFile() 行 31
+> PoetryStorageTest.RemoveDatabaseFile() 行 25
+>
+> **此时只有Windows电脑报错**  ==> 数据库 当前处于 被打开状态 ;  ==当文件被打开状态,无法删除== 
+>
+> ==存粹的工程技巧 和工程 知识==
+>
+> :interrobang: 如何解决呢? 
+>
+> :key: 提供一个函数进行解决
+>
+> > 定义在哪里?
+> >
+> > 不是业务层面上的功能 ,是测试上面的功能  ,业务层面 ,需要在接口 文件中书写; 测试 ,面向的是`PoetryStorage`类 
+
+```c#
+// <summary>
+        /// 关闭诗词数据库.
+        /// </summary>
+        /// <returns></returns>
+        public async Task CloseAsync() => await Connection.CloseAsync();
+```
+
+
+
+```c#
+ await poetryStorage.CloseAsync();
+```
+
+<iframe src="//player.bilibili.com/player.html?aid=715269291&bvid=BV1zQ4y1Z79j&cid=329318070&page=11" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P11 74  测试查询一组诗词数据
+
+**步骤:**
+
+> 1. 在诗词帮助类中, 添加常量字段 ,记录诗词数量
+> 2. 测试函数编写
+
+```c#
+/// <summary>
+        /// 测试获取满足给定条件的诗词集合.
+        /// </summary>
+        /// <returns></returns>
+        [Test]
+        public async Task TestGetPoetriesAsync()
+        {
+            var poetryStorage =
+                await PoetryStorageHelper.GetInitializedPoetryStorageAsync();
+            var where = Expression.Lambda<Func<Poetry, bool>>(
+                Expression.Constant(true),
+                Expression.Parameter(typeof(Poetry), "p"));
+            var poetries =
+                await poetryStorage.GetPoetriesAsync(where, 0, int.MaxValue);
+            Assert.AreEqual(PoetryStorageHelper.NumberPoetry, poetries.Count);
+            await poetryStorage.CloseAsync();
+        }
+```
+
+> 最后,视频 测试所有的 代码覆盖率,是100% ==> 以后代码出错,绝对是 新写的代码问题,已经测试的是没有问题 
+> 测试 ,有几种测试可能, 可能覆盖不全, 
+> 单元测试 墨迹,花时间,但是 以后再也不需要考虑,直接拿来用就可以
+
+
+
+# 10 View and ViewModel
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329318198&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P1 75集 使用设计器,(作用不大)
+
+**步骤:**
+
+> 1. 在主项目Demo中, `Views`文件夹,添加新的内容页`Content Page` 命名为`Result.xaml`
+> 2. 添加基础的 ListView
+
+```xaml
+<ListView ItemsSource="{Binding PoetryCollection}">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </ListView.ItemsSource>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Name}"
+                              Detail="{Binding Snippet}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+```
+
+**知识点**
+
+> 1.  <ContentPage.Content> 默认自带的,可以删除 不写会默认添加
+> 2. 预览效果,不一定很准
+
+![image-20230226231147855](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226231147855-2023-2-2623:11:48.png)
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329318665&page=3" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P3 77 无限滚动效果
+
+```
+<ListView.Footer> 用来做注脚
+```
+
+==所有UI类做单元测试,非常困难==
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329318665&page=3" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P4 78
+
+1. 安装Mvvmlightlibs
+2. 新建ViewModel  `ResultPageViewModel`
+
+**知识点:**
+
+> 1. ViewModel可以被单元测试,需要将方法或者属性进行公开
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329319017&page=5" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P5 79 显示结果 Xamarin 并不支持 无穷滚动,但是 无穷滚动是国际标准,第三方支持;,是一个扩展功能
+
+![image-20230226233452334](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230226233452334-2023-2-2623:34:52.png)
+
+> 1. 安装上述 预览版的 包, 支持 无线滚动功能
+> 2. Services 中代码块分布  和 ViewModel不一样 
+>    * 构造函数,绑定属性 ,绑定命令,其他
+> 3. 在构造函数初始化
+
+**知识点:**
+
+> 1. 舒服的开发顺序,先做 `Services` 再做`ViewModels` 最后再做 `View`
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329319229&page=6" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P6 80	
+
+```c#
+public string Status
+        {
+            get => _status;
+            set => Set(nameof(Status), ref _status, value);
+        }
+        private string _status;
+```
+
+> 1. 私有 字段,
+> 2. 公有属性, get读取字段,set设置字段,调用Set方法,修改字段值,并触发statechange事件,将属性变化传播出去
+
+有了上述的属性,就可以设置属性
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329319567&page=7" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P7 81集 

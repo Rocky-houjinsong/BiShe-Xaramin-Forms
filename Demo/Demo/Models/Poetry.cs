@@ -16,10 +16,16 @@ namespace Demo.Models
         [SQLite.Column("id")]
         public int Id { get; set; }
         /// <summary>
-        /// 标题.
+        /// 作者.
         /// </summary>
         [SQLite.Column("author_name")]
         public string AuthorName { get; set; }
+        /// <summary>
+        /// 标题.
+        /// </summary>
+        [SQLite.Column("name")]
+        public string Name { get; set; }
+
         /// <summary>
         /// 朝代.
         /// </summary>

@@ -35,6 +35,11 @@ namespace Demo.Services
         private SQLiteAsyncConnection Connection => _connection ??
                                                    (_connection = new SQLiteAsyncConnection(PoetryDbPath));
         /// <summary>
+        /// 偏好存储.
+        /// </summary>
+        private IPreferenceStorage _preferenceStorage;
+        //****************继承方法
+        /// <summary>
         /// 初始化诗词存储
         /// </summary>
         /// <returns></returns>
@@ -50,7 +55,7 @@ namespace Demo.Services
                 await dbAssertStream.CopyToAsync(dbFilesStream);// 将目标文件拷贝到来源文件
             }
 
-            Preferences.Set(PoetryStorageConstants.VersionKey, PoetryStorageConstants.Version); 
+            _preferenceStorage.Set(PoetryStorageConstants.VersionKey, PoetryStorageConstants.Version); 
         }
 
         /// <summary>
@@ -58,7 +63,7 @@ namespace Demo.Services
         /// </summary>
         /// <returns></returns>
         public bool IsInitiallized() =>
-            Preferences.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion) ==
+            _preferenceStorage.Get(PoetryStorageConstants.VersionKey, PoetryStorageConstants.DefaultVersion) ==
             PoetryStorageConstants.Version;
 
         /// <summary>
@@ -72,6 +77,19 @@ namespace Demo.Services
 
         public async Task<IList<Poetry>> GetPoetriesAsync(Expression<Func<Poetry, bool>> where, int skip, int take) =>
             await Connection.Table<Poetry>().Where(where).Skip(skip).Take(take).ToListAsync();
-
+        //********* 公开方法
+        /// <summary>
+        /// 诗词存储.
+        /// </summary>
+        /// <param name="preferenceStorage">偏好存储</param>
+        public PoetryStorage(IPreferenceStorage preferenceStorage)
+        {
+            _preferenceStorage = preferenceStorage;
+        }
+        /// <summary>
+        /// 关闭诗词数据库.
+        /// </summary>
+        /// <returns></returns>
+        public async Task CloseAsync() => await Connection.CloseAsync();
     }
 }
