@@ -1450,3 +1450,82 @@ public string Status
 <iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329319567&page=7" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 > P7 81集 
+
+
+
+* 搜索结果页,是显式查询结果,就需要调用查询方法,但是查询条件一定是 别人给的,不是自己生成的 ;
+  :interrobang: 那如何解决?  他人 如何跨页 传参数 ;
+  
+  :key:  1. `Where参数 通过绑定属性进行传值
+  
+* `OnCanLoadMore` 和 `OnLoadMore`  这两个 是要有的,在文档中最小的例子都有 `OnLoadMore` 是用来加载数据的
+
+* 声明Where属性, 重新填写 查询方法的参数 ,三个;
+
+:interrobang: 判断  返回终止条件  : 诗词返回条数 小于 `PageSize`  此时需要 让`OnCanLoadMore` 设为 False
+
+:key: 通过私有变量  _canLoadMore, 默认值是false
+
+:interrobang:  谁 来将它 设置为true呢?
+:key: Where属性来设置  ,<font color = Red size = 4> where属性变化,说明查询条件变化</font> ,此时就需要 将私有字段 _canLoadMore 设置为 true
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329319677&page=8" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P8  82 
+
+
+
+:interrobang: 什么情况下显示 没有任何结果呢? 
+
+一开始没有,并且查也没有查到 
+
+> 理清 该方法内容的思路:
+>
+> 1. 先取Page条结果,
+>    * 如果取回的不足1页,,说明数据库没有更多的结果了
+>    * 一条结果都没有,同时 一开始都没有任何结果
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329320023&page=9" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P9 83 上述 已完成 加载数据的要求;  每次新查询,应该把 就查询给清空;在哪里操作?
+>
+> 触发新查询 在哪里操作 ,如何触发 重新载入  
+
+==搜索页 和 收藏页==差不多
+
+点击查询,立刻跳转 ,加载查询之后的结果,搜索页准备一个查询条件,传给搜索结果页;
+
+再次搜索,先把原来的搜索结果删除,再把新的加载进来
+
+> 在MVVM中,任何东西 都需要 `Command` 来执行  ==> 绑定命令,前面只有绑定属性
+
+> 页面显示命令 `PageAppearingCommand`就是 页面显示时执行的命令  
+>
+> 新查询才执行
+
+执行初始化操作之前, 将 newQuery 设置为false ,保证初始化操作 只执行1次,下一次执行 `PageAppearingCommand` 时
+
+:interrobang:  不理解 但是 之后开发好好体会吧 
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329320435&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
+
+> P10  84 进行单元测试 
+
+> 1. 新建文件夹, 
+> 2. 测试类
+
+
+
++= 空格 被挡住,没有弹出事件列表, 按esc ,再按空格
+
+此处进行 单元测试 ,
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329320702&page=11" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P10  85 

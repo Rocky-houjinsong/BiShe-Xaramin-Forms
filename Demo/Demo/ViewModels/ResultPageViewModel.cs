@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using Demo.Models;
 using Demo.Services;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using Xamarin.Forms.Extended;
 
 namespace Demo.ViewModels
@@ -20,7 +22,27 @@ namespace Demo.ViewModels
         /// <param name="poetryStorage">诗词存储</param>
         public ResultPageViewModel(IPoetryStorage poetryStorage)
         {
+            PoetryCollection = new InfiniteScrollCollection<Poetry>
+            {
+                OnCanLoadMore = () => _canLoadMore,
+                OnLoadMore = async () =>
+                {
+                    Status = Loading;
+                    var poetries = await poetryStorage.GetPoetriesAsync(Where,PoetryCollection.Count,PageSize);
 
+                    if (poetries.Count < PageSize)
+                    {
+                        _canLoadMore = false;
+                        Status = NoMoreResult;
+                    }
+
+                    if (poetries.Count == 0 && PoetryCollection.Count ==0)
+                    {
+                        Status = NoResult;
+                    }
+                    return poetries;
+                }
+            };
         }
         //******绑定属性
         /// <summary>
@@ -39,7 +61,44 @@ namespace Demo.ViewModels
         /// 加载状态.
         /// </summary>
         private string _status;
+        /// <summary>
+        /// Where条件
+        /// </summary>
+        public Expression<Func<Poetry, bool>> Where
+        {
+            get => _where;
+            set
+            {
+                Set(nameof(Where), ref _where, value);
+                _isNewQuery = true; 
+                //_canLoadMore = true; 转移到 绑定命令中
+                
+            }
+        }
 
+        /// <summary>
+        /// Where条件
+        /// </summary>
+        private Expression<Func<Poetry, bool>> _where;
+        //*********************** 绑定命令
+        private RelayCommand _pageAppearingCommand;
+
+        public RelayCommand PageAppearingCommand =>
+            _pageAppearingCommand ?? (_pageAppearingCommand = new RelayCommand(
+
+                async () =>
+                {
+                    if (!_isNewQuery)
+                    {
+                        return;
+                    }
+
+                    _isNewQuery = false;
+                    PoetryCollection.Clear();
+                    _canLoadMore = true;
+                    await PoetryCollection.LoadMoreAsync();
+                }));
+        
 
         //******** 公开变量
         /// <summary>
@@ -58,5 +117,15 @@ namespace Demo.ViewModels
         /// 没有更多结果
         /// </summary>
         public const string NoMoreResult = "没有更多结果";
+
+        //********私有变量
+        /// <summary>
+        /// 能否加载更多
+        /// </summary>
+        private bool _canLoadMore;
+        /// <summary>
+        /// 是否为新查询
+        /// </summary>
+        private bool _isNewQuery;
     }
 }
