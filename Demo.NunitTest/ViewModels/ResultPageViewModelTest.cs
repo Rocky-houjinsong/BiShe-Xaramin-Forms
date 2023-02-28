@@ -49,6 +49,27 @@ namespace Demo.NunitTest.ViewModels
                 }
             };
             Assert.AreEqual(0, resultPageViewModel.PoetryCollection.Count);
+          //  resultPageViewModel.PageAppearingCommand.Execute(null); 多线程
+          await resultPageViewModel.PageAppearingCommandFunction();
+            Assert.AreEqual(20, resultPageViewModel.PoetryCollection.Count);
+            Assert.AreEqual(2, statusList.Count); //验证status状态
+            Assert.AreEqual(ResultPageViewModel.Loading, statusList[0]);
+            Assert.AreEqual("", statusList[1]); 
+            // 上述验证 状态 ,还可以验证数量,和内容是否正确
+            // 验证 PageAppearingCommand在没有新的where条件下,不会再次加载 
+            var poetryCollectionChanged = false;
+            resultPageViewModel.PoetryCollection.CollectionChanged += (sender, args) => poetryCollectionChanged = true;
+            await resultPageViewModel.PageAppearingCommandFunction();
+            Assert.IsFalse(poetryCollectionChanged);
+
+           // await resultPageViewModel.PoetryCollection.LoadMoreAsync();
+            //Assert.AreEqual(30, resultPageViewModel.PoetryCollection.Count);
+            //Assert.IsFalse(resultPageViewModel.PoetryCollection.CanLoadMore);
+            //Assert.AreEqual(4, statusList.Count); 诗词数量为30 可以通过
+            //Assert.AreEqual(ResultPageViewModel.Loading, statusList[2]);
+            //Assert.AreEqual("", statusList[3]);
+            //Assert.AreEqual(ResultPageViewModel.NoMoreResult, statusList[4]);
+
             await poetryStorage.CloseAsync();
         }
 

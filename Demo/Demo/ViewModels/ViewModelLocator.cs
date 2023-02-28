@@ -24,6 +24,9 @@ namespace Demo.ViewModels
             SimpleIoc.Default.Register<AnotherPageViewModel>();
             SimpleIoc.Default.Register<DataBasePageViewModel>();
             SimpleIoc.Default.Register<IFavoriteStorage, FavoriteStorage>();
+            SimpleIoc.Default.Register<IPoetryStorage, PoetryStorage>();
+            SimpleIoc.Default.Register<ResultPageViewModel>();
+            SimpleIoc.Default.Register<IPreferenceStorage, PreferenceStorage>();
         }
         // 借助字段MainPageViewModel进行获取该实例中的值.  
         public MainPageViewModel MainPageViewModel =>
@@ -34,6 +37,10 @@ namespace Demo.ViewModels
 
         public DataBasePageViewModel DataBasePageViewModel =>
             SimpleIoc.Default.GetInstance<DataBasePageViewModel>();
-
+        /// <summary>
+        /// 搜索结果页VieModel
+        /// </summary>
+        public ResultPageViewModel ResultPageViewModel =>
+            SimpleIoc.Default.GetInstance<ResultPageViewModel>();
     }
 }

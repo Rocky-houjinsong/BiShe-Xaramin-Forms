@@ -1529,3 +1529,310 @@ public string Status
 <iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329320702&page=11" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 > P10  85 
+
+> 加载一次 就会返回20条结果
+
+==Command()底层就是调用Execute函数== Execute必须传参数,若是没有参数,传`null`就可以
+
+:interrobang:  此时  运行报错 ,预期20 结果0 ; 走调试, 报出 无法删除数据库的错误 ;
+
+:warning: 我今天也是遇到这个问题,   运行和调试 出现的问题 不一致 ;
+
+```c#
+resultPageViewModel.PageAppearingCommand.Execute(null); // Execute 异步多线程执行
+```
+
+<font color = red size = 5> Execute函数执行 会自动开启一个新的线程 </font>
+
+`PageAppearingCommand` 会在一个新的线程中 执行
+
+<font color = blue > 此处 讲解为何 调试失败, 运行失败的推理</font>   详细阐述看
+
+> ```c#
+>    Assert.AreEqual(0, resultPageViewModel.PoetryCollection.Count);
+>             resultPageViewModel.PageAppearingCommand.Execute(null);
+>             Assert.AreEqual(20, resultPageViewModel.PoetryCollection.Count);
+> ```
+>
+> 上述 三步 是单元测试 内执行的语句 , 单元测试是单线程执行的;
+>
+> 但是 第二语句  是 多线程执行 `没有等待第二句执行完` 就直接执行第三句
+>
+> 可第三句需要 第二句执行结果来做判定 ,因此 冲突 
+>
+> `Command `不可被测试 
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329320877&page=12" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P11 86; 曲线救国 , ,之前不可被测试就剥离出去,以自定义的形式 进行测试 
+>
+> 现在 : **想测试的,不能被剥离 ,**  :interrobang:  如何解决?
+
+:key:  将`Command`里面的内容变为一个函数  ==> 将不可测试的 进行拆分 成 待测函数和外壳
+
+因此  测试`PageAppearingCommandFunction` 就可以了
+
+==单元测试  不是万能的 ,有些只能人工审核== 
+
+
+
+测试通过 ,验证数量, 验证内容 自己来完成 ;
+
+还需要验证 `PageAppearingCommand`在Where没有发生变化,也就是where属性没有重新赋值的时候是不会触发 第二次加载的
+
+resharper快捷键 `Shift + Ctrl + 空格`  触发智能提示;
+
+测试 上述问题, 关注 collection是否改变的事件就可以 
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329321381&page=14" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
+
+> P12 87  View  和 ViewModel连接起来 
+
+**步骤:**
+
+> 1. 使用`ViewModelLocator` 进行连接  ,构造器和 实例的构造 
+>
+> 2. 在 `App.xaml` 中 命名控件中 注册
+>
+>    ```xaml
+>    xmlns:vm="clr-namespace:Demo.ViewModels;assembly=Demo" 
+>    ```
+>
+>    并 填写 
+>
+>    ```c#
+>    <vm:ViewModelLocator x:Key="ViewModelLocator"/>
+>    ```
+>
+> 3. 在`ResultPage.xaml` 指定 `BindingContext` 
+>
+>    ```xaml
+>     BindingContext="{Binding ResultPageViewModel, Source={StaticResource ViewModelLocator}}">
+>    ```
+
+
+
+<font color = red size = 5> 页面执行,调用`PageAppearingCommand`  </font> :interrobang:  ? ,听起来是这个词组
+
+之前绑定都是用  button 的 command进行绑定
+
+`ContentPage` 里面是没有 `Command` 的 ,但是有 `Appearing事件`  去 触发 . 有些 不优雅 
+
+**步骤:**
+
+> 1. 在 `ContextPage` 空间中填写并关联 `Appearing = "ResultPage_OnAppearing"
+>
+> 2. 重写 该事件
+>
+>    ```c#
+>    private void ResultPage_OnAppearing(object sender, EventArgs e)
+>    {
+>        ((ResultPageViewModel)BindingContext).PageAppearingCommand.Execute(null);
+>    } // 强制类型转换, 调用 该方法 
+>    
+>    ```
+
+:star: 问题如下
+
+* 丑 ,代码有些难理解 
+*  MVVM 模式要求, 不在`xaml`的 `xaml.cs文件中写代码 ,破坏该模式
+
+:interrobang:  **如何触发`PageAppearingCommand`**方法而不调用该事件呢?
+
+:key: :heavy_check_mark: 使用第三方机制  ==>第三方控件
+
+==安装`Behavior.Forms`== ,作者是 `David Britch` 
+
+利用该控件将 事件 ,关联
+
+**步骤:**
+
+1. `ContentPage` 导入
+
+   ```xaml
+   xmlns="http://xamarin.com/schemas/2014/forms" 
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                x:Class="Demo.Views.ResultPage"
+   <!-- 新版本 -->
+                xmlns:d ="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc ="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable ="d"
+   <!-- 原有xaml设计器 -->
+                xmlns:b ="clr-namespace:Behaviors;assembly=Behaviors"
+   <!-- 导入B.F -->
+                BindingContext="{Binding ResultPageViewModel, Source={StaticResource ViewModelLocator}}">
+   <!-- 绑定ViewModel -->
+   ```
+
+2. 添加标签组
+
+   ```xaml
+       <ContentPage.Behaviors>
+           <b:EventHandlerBehavior EventName="Appearing">
+               <b:ActionCollection>
+                   <b:InvokeCommandAction Command="{Binding PageAppearingCommand}"/>
+               </b:ActionCollection>
+           </b:EventHandlerBehavior>
+       </ContentPage.Behaviors>
+   ```
+
+3. 在app,appshell中 注册;
+
+4.  :warning: 没有 注册 `IPreferenceStorage` 
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329322205&page=16" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P13 88 ,注册 `IPreferenceStorage` 
+
+**步骤:**
+
+1. 该类没有实现, 在`Services` 文件夹下新建一个类,命名 `PreferenceStorage` 	实现接口方法
+2. 在Locator中注册
+
+:interrobang: 测试 无法执行,打断点 看是否执行到`ResultPageViewModel里面 发现  `   `PageAppearingCommandFunctio` 中 `_isNewQuery` 是false
+
+==一开始启动没有人 给它传 where条件, 当然不好使了==
+
+添加测试使用的where条件
+
+```c#
+//TODO 供演示使用
+            Where = Expression.Lambda<Func<Poetry, bool>>(
+                Expression.Constant(true), Expression.Parameter(typeof(Poetry), "p"));
+```
+
+:warning:  非但没执行,反而崩溃了  ,调试发现不存在这张表;
+
+单元测试 调用 迁移数据库,通过 `poetrystorage`	 进行迁移,调用其初始化数据库函数方法 
+
+==构造函数不能是 async== 
+
+**步骤:**
+
+只能将 poetryStorage 变成一个本地成员变量在其他地方进行 调用初始化操作 
+
+
+
+此时成功完成 
+
+----
+
+<iframe src="//player.bilibili.com/player.html?aid=757837987&bvid=BV1i64y1U7gY&cid=329322672&page=17" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P17 91  ,上面完成  成功完成数据的加载和显示 
+
+:heavy_multiplication_x: 此时还不能无限滚动,还得设置 
+
+之前注脚 完成,现在设置 无限滚动 
+
+`ResultPage.xaml` 名称空间中,输入  下面语句, 注意 `Xamarin` 选择 ==Xamarin.Forms.Extended.InfiniteScrolling== 
+
+```c#
+xmlns:scroll ="clr-namespace:Xamarin.Forms.Extended;assembly=Xamarin.Forms.Extended.InfiniteScrolling"
+```
+
+扩充listView功能
+
+```c#
+  <ListView.Behaviors>
+                <scroll:InfiniteScrollBehavior/>
+            </ListView.Behaviors>
+```
+
+==扩展控件功能的就是 Behavior机制==
+
+此时 , 实机运行成功, 单元测试不可以, 在`视图` 有`任务列表` 显示 所有的TODO `Ctrl + W,T` 
+
+# 11 Navigation
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329322938&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P1 92 ,上面搞定的是 诗词数据库的加载,现在是 诗词详情页的展开
+
+> 诗词详情页和诗词搜索页相互关联,从结果页可以跳转到 详情页
+
+**步骤**
+
+> 1. `Views`文件夹新建内容页`DetailPage`
+> 2. 添加导航服务接口不止一个  在`Services`文件夹中新建接口 `IContentNavigationService`
+
+==通用做法基于页面的名字进行导航==
+
+* 页面导航 需要传递实例 ,告诉他,导航到谁,传递的是Page实例页面实例
+
+  * 这样造成类型依赖 ==> `Services`的层级非常高的
+
+  * `services` 是绝不可以 依赖`View` 的 ;
+
+    ==>剥离 出来  基于 字符串形成依赖,拒绝基于 类型形成依赖
+
+![image-20230228233423849](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230228233423849-2023-2-2823:34:25.png)
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329323125&page=2" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P2 93 讨论导航问题
+
+导航有两种,,一种 浮出`Master-Detail` ,一种 页面里面`Tabbed`, 二者原理不一样, 
+
+本视频主要讲解页面内的导航 
+
+* 浮出 => 从 `浏览页` 切换到`关于页` 没有动画的 ,但往回且有动画,由listView带来的
+  * 而 在浏览页  自带的 项目点击进入这个跳转 也有动画  
+* 标签页切换 
+
+二者的机制不同
+
+本视频主要讲述 ,从页面内 ,跳转到详情页
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329323448&page=3" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P3 94 
+
+在 `Views`文件夹中的自带的`ItemsPage`文件中有 ==OnItemSelected== , 触发它,就能进入其他页面
+
+查看 该方法 就知道  `new` 了一个Page
+
+`Navagation` 是  `ItemPage`的一个属性 
+
+<font color = red size = 5> 导航就在View层做,利用该属性</font>
+
+根导航, 之后再讲
+
+
+
+但我就想 将 导航操作就放在 Service中做 
+
+View中的操作, 是在ViewModel中执行的, ViewModel 还得通过 Service执行;
+
+但Service 又做不了导航,导航只能在 View中操作 
+
+:interrobang:  如何 在Services中将view层的事情给做了
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329324033&page=4" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P4 95 绕很大的圈 
+
+> 新建类实现上述接口 `ContentNavigationService`
+
+导航,归根结底是由View进行,要找到它 ;
+
+在Xamarin中,找到当前显示的view 有一套方法, 要导航的东西一定是你当前显示的页面,
+==获得当前正在显示的页面
+
+**例如**
+
+你看到是`MainPage`  关于,浏览两个页面 都是在`MainPage`中显示
+
+==官方文档讲 覆盖一层上去,返回就是抽去上面一层==
+
+`MainPage`是一个 `MasterDetailPage` ,是 官方提供的模板
+
+<font color =red size =4> `App.xaml`中的MainPage是APP的属性, 由MainPage()赋值</font>
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329324578&page=5" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P5 96

@@ -79,7 +79,9 @@
     <FlyoutItem Title="次页面" Icon="icon_feed.png">
         <ShellContent Route="SecondPage" ContentTemplate="{DataTemplate local:SecondPage}" />
     </FlyoutItem>
-
+    <FlyoutItem Title="结果搜索" Icon="icon_feed.png">
+        <ShellContent Route="ResultPage" ContentTemplate="{DataTemplate local:ResultPage}" />
+    </FlyoutItem>
     <!--菜单选项, 退出选项 ,设置样式风格类,以及触发事件-->
     <MenuItem Text="登出" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItem_LogoutClicked">
     </MenuItem>

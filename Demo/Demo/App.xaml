@@ -9,7 +9,7 @@
     <Application.Resources>
         <!--第二步,在app.xaml中注册-->
         <vm:ViewModelLocator x:Key="ViewModelLocator"/>
-            <ResourceDictionary>
+        <ResourceDictionary>
             <Color x:Key="Primary">#2196F3</Color>
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>

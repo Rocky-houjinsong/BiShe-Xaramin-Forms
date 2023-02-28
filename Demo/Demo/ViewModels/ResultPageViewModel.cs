@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using Demo.Models;
 using Demo.Services;
 using GalaSoft.MvvmLight;
@@ -15,6 +16,11 @@ namespace Demo.ViewModels
     /// </summary>
    public class ResultPageViewModel :ViewModelBase
     {
+        /// <summary>
+        /// 诗词存储
+        /// </summary>
+        //TODO 供演示使用的诗词存储, 未来应该删除
+        private IPoetryStorage _poetryStorage;
         //*****构造函数
         /// <summary>
         /// 搜索结果页ViewModel.
@@ -22,6 +28,8 @@ namespace Demo.ViewModels
         /// <param name="poetryStorage">诗词存储</param>
         public ResultPageViewModel(IPoetryStorage poetryStorage)
         {
+            //TODO 供演示使用的诗词存储,未来应该删除.
+            _poetryStorage = poetryStorage;
             PoetryCollection = new InfiniteScrollCollection<Poetry>
             {
                 OnCanLoadMore = () => _canLoadMore,
@@ -29,7 +37,7 @@ namespace Demo.ViewModels
                 {
                     Status = Loading;
                     var poetries = await poetryStorage.GetPoetriesAsync(Where,PoetryCollection.Count,PageSize);
-
+                    Status = "";
                     if (poetries.Count < PageSize)
                     {
                         _canLoadMore = false;
@@ -44,6 +52,9 @@ namespace Demo.ViewModels
                 }
             };
         }
+
+     
+
         //******绑定属性
         /// <summary>
         /// 诗词集合.
@@ -86,19 +97,25 @@ namespace Demo.ViewModels
         public RelayCommand PageAppearingCommand =>
             _pageAppearingCommand ?? (_pageAppearingCommand = new RelayCommand(
 
-                async () =>
-                {
-                    if (!_isNewQuery)
-                    {
-                        return;
-                    }
+                async () => await PageAppearingCommandFunction()));
 
-                    _isNewQuery = false;
-                    PoetryCollection.Clear();
-                    _canLoadMore = true;
-                    await PoetryCollection.LoadMoreAsync();
-                }));
-        
+        public async Task PageAppearingCommandFunction()
+        {
+            //TODO 供演示使用的Where条件,未来应该删除
+            Where = Expression.Lambda<Func<Poetry, bool>>(
+                Expression.Constant(true), Expression.Parameter(typeof(Poetry), "p"));
+            // TODO 演示时使用的 ,初始化诗词存储数据库方法调用
+            await _poetryStorage.InitializeAsync();
+            if (!_isNewQuery)
+            {
+                return;
+            }
+
+            _isNewQuery = false;
+            PoetryCollection.Clear();
+            _canLoadMore = true;
+            await PoetryCollection.LoadMoreAsync();
+        }
 
         //******** 公开变量
         /// <summary>
@@ -127,5 +144,6 @@ namespace Demo.ViewModels
         /// 是否为新查询
         /// </summary>
         private bool _isNewQuery;
+        
     }
 }
