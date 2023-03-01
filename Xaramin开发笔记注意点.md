@@ -1631,7 +1631,7 @@ resharper快捷键 `Shift + Ctrl + 空格`  触发智能提示;
 >    {
 >        ((ResultPageViewModel)BindingContext).PageAppearingCommand.Execute(null);
 >    } // 强制类型转换, 调用 该方法 
->    
+>                
 >    ```
 
 :star: 问题如下
@@ -1835,4 +1835,171 @@ View中的操作, 是在ViewModel中执行的, ViewModel 还得通过 Service执
 
 <iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329324578&page=5" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-> P5 96
+> P5 96   
+
+
+
+两个模板中都有 `NavigationPage这个标签, 这个 是 模板能进行跳转的基础 
+ 方法走的是 ==Navigation.PushModalAsync== 进行跳转页面操作
+
+`MasterDetailPage` 之所以能导航,是因为里面有  `Navigation` 这个标签;
+
+```c#
+//App.xaml 
+MainPage = new navigationPage(new ItemPage());  // 这样才能导航
+```
+
+
+
+新建一个 `TestPage`,添加 按钮,及其方法 ,
+
+```
+private async Task Button_OnClicked(object sender, EventArgs e)
+        {
+            var cns = new ContentNavigationService();
+            await cns.NavigateToAsync("");
+        }
+```
+
+在 `MainPage.xaml`中的 `MasterDetailPage.Detail`中  修改  `<views:Page />`
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329324755&page=6" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> P6 97 
+
+![image-20230301152358290](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230301152358290-2023-3-115:23:59.png)
+
+ MVVM + Service
+
+![image-20230301152557249](https://gitee.com/songhoujin/pictures-to-typora-by-utools/raw/master/image-20230301152557249-2023-3-115:25:58.png)
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329325147&page=8" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
+
+> P8 99  
+>
+> 示例中 ,每次点击创建一个新的实例,造成内存泄漏
+>
+> 每个页面 只创建一份,那势必要缓存,  该如何解决? :interrobang: 
+
+==将`new` Page的操作 给剥离出来==
+
+在内存中 缓存一组对象最常用的方法就是使用字典
+
+其他语言使用 Map ,C#语言使用
+
+在缓存中 读取,读到就使用,没有 就新建
+
+方法编写完成 , `ContentNavigation`(进行导航)依赖`ContentPageActivationService` (new页面)
+
+以 私有变量的形式进行依赖
+
+
+
+<iframe src="//player.bilibili.com/player.html?aid=802862128&bvid=BV1Dy4y1s7RR&cid=329326135&page=10" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+> 10 101
+>
+> 公开方法获取私有变量	
+
+> P11 102 和Spring IoC 非常像
+
+上面的扩展性很差 , 
+
+1. 需要在`IContentNavigationService`里面 添加一个 待加载页面的 字符常量
+
+   ```
+    /// <summary>
+       /// 内容导航常量.
+       /// </summary>
+       public static class ContentNavigationConstants
+       {
+           /// <summary>
+           /// 诗词详情页
+           /// </summary>
+           public const string DetailPage = nameof(Views.DetailPage);
+       }
+   ```
+
+   
+
+2. 在 `ContentPageActivationService`中 添加一个 if语句进行判断 是否是该字符常量
+
+   ```c#
+      public ContentPage Activate(string pageKey)
+           {
+               //完成页面的缓存  +  激活.
+               if (cache.ContainsKey(pageKey))
+               {
+                   return cache[pageKey];
+               }
+   
+               if (pageKey == ContentNavigationConstants.DetailPage)
+               {
+                   cache[pageKey] = new Views.DetailPage();
+               }
+   
+               return cache[pageKey];
+           }
+   ```
+
+<font color = red size = 5> 使用反射机制</font>
+
+
+
+根据类型 创建对象;
+
+获得类型,:interrobang: 如何获得?
+
+:key: 
+
+准备一个类型字典 ;
+
+```c#
+/// <summary>
+        /// 页面键 - 页面类型字典
+        /// </summary>
+        public static readonly Dictionary<string, Type> PageKeyTypeDictionary =
+            new Dictionary<string, Type>{ { DetailPage, typeof(Views.DetailPage)  } };
+```
+
+根据类型 ,创建实例
+
+```c#
+  cache[pageKey]=
+            (ContentPage) Activator.CreateInstance(ContentNavigationConstants.PageKeyTypeDictionary[pageKey]);
+```
+
+> 103
+
+```C# 
+public ContentPage Activate(string pageKey)
+        {
+            //完成页面的缓存  +  激活.
+            if (cache.ContainsKey(pageKey))
+            {
+                return cache[pageKey];
+            }
+
+            /*if (pageKey == ContentNavigationConstants.DetailPage)
+            {
+                cache[pageKey] = new Views.DetailPage();
+            }*/
+            cache[pageKey]=
+            (ContentPage) Activator.CreateInstance(ContentNavigationConstants.PageKeyTypeDictionary[pageKey]);
+            return cache[pageKey];
+        }
+```
+
+使用三元表达式 将 上述进行转换;
+
+赋值具有传递性 ,返回 赋值给第一个
+
+**总结:**
+
+先编写 `IContentNavigationService`,有 `NavigateToAsync`函数 ,实现 传递页面键进行跳转;
+
+编写 上述实现类 ,
+
+大问题 :interrobang: 不能传参数 
