@@ -7,7 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AC.UWP", "AC.UWP\AC.UWP.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AC.Android", "AC.Android\AC.Android.csproj", "{162EFE83-507C-4BA1-B9E9-31D9EE3205A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AC", "AC\AC.csproj", "{93C6E135-5AEB-43B5-A16E-9135EAB9ED75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AC", "AC\AC.csproj", "{93C6E135-5AEB-43B5-A16E-9135EAB9ED75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "笔记", "笔记", "{1F1A0B42-BB95-4AFA-B4F9-9C9A433F41EF}"
+	ProjectSection(SolutionItems) = preProject
+		高级控件.md = 高级控件.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -137,7 +137,7 @@
                                 x:Name="ClickHyperlinkButton"
                                 Margin="8"
                                 TextDecorations="Underline">
-                            <!--Label本身是不可以被点击的,需要进行方法扩展 \
+                            <!--Label本身是不可以被点击的,需要进行方法扩展 
                             其中一个方法 就是手势识别 GestureRecongizers-->
                             <Label.GestureRecognizers>
                                 <!--Tap 点击的意思-->
