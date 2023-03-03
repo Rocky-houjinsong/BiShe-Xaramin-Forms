@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToConnection.Models;
 using ToConnection.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -27,10 +28,10 @@ namespace ToConnection.Views
         private async void Button_OnClicked(object sender, EventArgs e)
         {
             // TODO 测试性质 每次都new ,内存泄漏
-            var cns = new ContentNavigationService(new ContentPageActivationService());
-            await cns.NavigateToAsync(ContentNavigationConstants.AboutPage);
+            /*var cns = new ContentNavigationService(new ContentPageActivationService());*/
+           // await cns.NavigateToAsync(ContentNavigationConstants.AboutPage);
 
-            // await contentNavigationService.NavigateToAsync(ContentNavigationConstants.AboutPage);
+             await contentNavigationService.NavigateToAsync(ContentNavigationConstants.DetailPage,new Poetry {Name = "滁州西涧"});
         }
     }
 }

@@ -27,6 +27,8 @@ namespace ToConnection.ViewModels
             SimpleIoc.Default.Register<IPoetryStorage, PoetryStorage>();
             SimpleIoc.Default.Register<ResultPageViewModel>();
             SimpleIoc.Default.Register<IPreferenceStorage, PreferenceStorage>();
+            //****** Navigation
+            SimpleIoc.Default.Register<DetailPageViewModel>();
         }
         // 借助字段MainPageViewModel进行获取该实例中的值.  
         /*public MainPageViewModel MainPageViewModel =>
@@ -42,5 +44,10 @@ namespace ToConnection.ViewModels
         /// </summary>
         public ResultPageViewModel ResultPageViewModel =>
             SimpleIoc.Default.GetInstance<ResultPageViewModel>();
+        /// <summary>
+        /// 诗词详情页ViewModel.
+        /// </summary>
+        public DetailPageViewModel DetailPageViewModel =>
+            SimpleIoc.Default.GetInstance<DetailPageViewModel>();
     }
 }

@@ -14,8 +14,8 @@ namespace ToConnection
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
-            MainPage = new AppShell();
-           //MainPage = new MainPage();
+           // MainPage = new AppShell();
+            MainPage = new MainPage();
         }
 
         protected override void OnStart()

@@ -1631,7 +1631,7 @@ resharper快捷键 `Shift + Ctrl + 空格`  触发智能提示;
 >    {
 >        ((ResultPageViewModel)BindingContext).PageAppearingCommand.Execute(null);
 >    } // 强制类型转换, 调用 该方法 
->                
+>                   
 >    ```
 
 :star: 问题如下
@@ -1944,7 +1944,7 @@ private async Task Button_OnClicked(object sender, EventArgs e)
            }
    ```
 
-<font color = red size = 5> 使用反射机制</font>
+<font color = red size = 5> 使用反射机制</font>  缓存机制;
 
 
 
@@ -1994,7 +1994,7 @@ public ContentPage Activate(string pageKey)
 
 使用三元表达式 将 上述进行转换;
 
-赋值具有传递性 ,返回 赋值给第一个
+**赋值具有传递性 ,**返回 赋值给第一个
 
 **总结:**
 

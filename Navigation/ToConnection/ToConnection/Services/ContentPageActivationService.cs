@@ -11,7 +11,7 @@ namespace ToConnection.Services
     public class ContentPageActivationService : IContentPageActivationService
     {
         //**************** 私有变量;
-        /// <summary>
+        /// <summary> 
         /// 页面缓存.
         /// </summary>
         private Dictionary<string, ContentPage> cache =
