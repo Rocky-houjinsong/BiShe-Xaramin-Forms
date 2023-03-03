@@ -4,14 +4,17 @@
              xmlns:views="clr-namespace:ToConnection.Views"
              x:Class="ToConnection.Views.MainPage">
     <MasterDetailPage.Master>
-        <views:ItemsPage />
+        <views:AboutPage >
+        </views:AboutPage>
+        
     </MasterDetailPage.Master>
-
+   
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
                 <!--修改地方-->
-                <views:ResultPage />
+                <!--<views:ResultPage />-->
+                <views:TestPage/>
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>

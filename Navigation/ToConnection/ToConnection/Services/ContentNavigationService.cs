@@ -11,7 +11,7 @@ namespace ToConnection.Services
     {
         //**************** 私有变量
         private MainPage _mainPage;
-        //  Application.Current.MainPage ==>MainPage = new AppShell();
+        
 
         /// <summary>
         /// 内容页激活服务.
@@ -24,10 +24,10 @@ namespace ToConnection.Services
         /// <param name="pageKey">页面键</param>
         /// <returns></returns>
         public async Task NavigateToAsync(string pageKey) =>
-            await MainPage.Navigation.PushAsync(_contentPageActivationService.Activate(pageKey));
+            /*await MainPage.Detail.Navigation.PushAsync(_contentPageActivationService.Activate(pageKey));*/
         // 需要new出一个 参数,进行传值
         //TODO This is a test code
-        // await MainPage.Navigation.PushAsync(new AboutPage());自己做判断,,上面是替换方案
+         await MainPage.Detail.Navigation.PushAsync(new AboutPage());//自己做判断,,上面是替换方案
 
         //**************公开方法;
         public MainPage MainPage =>
