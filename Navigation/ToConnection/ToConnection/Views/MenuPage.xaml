@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:Behaviors;assembly=Behaviors"
+             x:Class="ToConnection.Views.MenuPage">
+    <!--<ContentPage.Resources>
+        <ResourceDictionary>
+            <lc:ItemTappedEventArgsToMenuItemConverter x:Key="ItemToMenuItem" />
+        </ResourceDictionary>
+    </ContentPage.Resources>-->
+    <!--<StackLayout VerticalOptions="FillAndExpand">
+        <ListView ItemsSource="{x:Static MenuItem.Items}"
+                  SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
+            <ListView.Behaviors>
+                <behaviors:EventHandlerBehavior EventName="ItemTapped">
+                    <behaviors:ActionCollection>
+                        <behaviors:InvokeCommandAction
+                            Command="{Binding MenuItemTappedCommand}"
+                            Converter="{StaticResource ItemToMenuItem}" />
+                    </behaviors:ActionCollection>
+                </behaviors:EventHandlerBehavior>
+            </ListView.Behaviors>
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </ListView.ItemsSource>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="10">
+                            <Label Text="{Binding Title}"
+                                   d:Text="{Binding .}"
+                                   FontSize="16" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout> -->
+</ContentPage>
