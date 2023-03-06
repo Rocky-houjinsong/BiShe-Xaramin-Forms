@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:ls="clr-namespace:ToConnection.Services;assembly=ToConnection"
+             xmlns:behaviors="clr-namespace:Behaviors;assembly=Behaviors"
+             xmlns:lc="clr-namespace:ToConnection.Converters;assembly=ToConnection"
+             BindingContext="{Binding DetailPageViewModel,Source={StaticResource ViewModelLocator}}"
+             ls:NavigationContext.NavigationParameter="{Binding Poetry}"
+             x:Class="ToConnection.Views.DetailPage"
+             Title="诗词详情页">
+  
+    <ContentPage.Behaviors>
+        <behaviors:EventHandlerBehavior EventName="Appearing">
+            <behaviors:ActionCollection>
+                <behaviors:InvokeCommandAction Command="{Binding PageAppearingCommand}" />
+            </behaviors:ActionCollection>
+        </behaviors:EventHandlerBehavior>
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <lc:StringToBoolSourceConverter x:Key="StringToBool" />
+            <lc:LayoutToTextAlignmentConverter x:Key="LayoutToAlignment" />
+            <lc:PoetryIndentConverter x:Key="PoetryIndent" />
+            <lc:TextIndentConverter x:Key="TextIndent" />
+            <lc:NegativeBoolConverter x:Key="Negative" />
+            <lc:FavoriteConverter x:Key="Favorite" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView> <!--根布局:滚动布局-->
+            <StackLayout Padding="8"> <!--流式布局--> <!--Padding 不贴顶-->
+                <Label FontSize="18"
+                       Margin="0,0,0,8"  
+                       HorizontalTextAlignment="Center"
+                       d:Text="小重山"
+                       Text="{Binding Poetry.Name}" /> <!--Margin  左上右下-->
+                <StackLayout Orientation="Horizontal"
+                             HorizontalOptions="Center"
+                             Margin="0,0,0,8">
+                    <Label FontSize="12"
+                           d:Text="宋"
+                           Text="{Binding Poetry.Dynasty}" />
+                    <Label FontSize="12"
+                           Text="·" />
+                    <Label FontSize="12"
+                           d:Text="章良能"
+                           Text="{Binding Poetry.AuthorName}" />
+                </StackLayout>
+                <!--文本内容 如何对齐
+                Text 绑定到 Poetry.Context-->
+                <Label FontSize="18"
+                       Margin="0,0,0,8"
+                       HorizontalTextAlignment="{Binding Poetry.Layout, Converter={StaticResource LayoutToAlignment}}"
+                       d:Text="柳暗花明春事深。&#xA;小阑红芍药，已抽簪。&#xA;雨馀风软碎鸣禽。&#xA;迟迟日，犹带一分阴。"
+                       Text="{Binding Poetry, Converter={StaticResource PoetryIndent}}" />
+                <StackLayout Margin="0,0,0,8"
+                             HorizontalOptions="Center"
+                             Orientation="Horizontal"
+                             d:IsVisible="true"
+                             IsVisible="{Binding Loading}">
+                    <ActivityIndicator WidthRequest="30"
+                                       IsRunning="{Binding Loading}"
+                                       d:IsRunning="true" />
+                    <Label Text="正在载入"
+                           FontSize="12"
+                           VerticalOptions="Center"
+                           Margin="8,0,0,0" />
+                </StackLayout>
+                <StackLayout Margin="0,0,0,8"
+                             HorizontalOptions="Center"
+                             Orientation="Horizontal"
+                             d:IsVisible="true"
+                             IsVisible="{Binding Loading, Converter={StaticResource Negative}}">
+                    <Switch d:IsToggled="true"
+                            IsToggled="{Binding Favorite.IsFavorite}">
+                        <Switch.Behaviors>
+                            <behaviors:EventHandlerBehavior EventName="Toggled">
+                                <behaviors:ActionCollection>
+                                    <behaviors:InvokeCommandAction
+                                        Command="{Binding FavoriteToggledCommand}" />
+                                </behaviors:ActionCollection>
+                            </behaviors:EventHandlerBehavior>
+                        </Switch.Behaviors>
+                    </Switch>
+                    <Label d:Text="已收藏"
+                           FontSize="12"
+                           Text="{Binding Favorite.IsFavorite, Converter={StaticResource Favorite}}"
+                           VerticalOptions="Center"
+                           Margin="8,0,0,0" />
+                </StackLayout>
+                <Label HorizontalTextAlignment="Center"
+                       FontSize="12"
+                       Margin="0,0,0,8"
+                       Text="译文"
+                       IsVisible="{Binding Poetry.Translation, Converter={StaticResource StringToBool}}" />
+                <Label FontSize="18"
+                       Margin="0,0,0,8"
+                       d:Text="柳色深暗&#xA;花姿明丽&#xA;浓浓一片灿烂春景，&#xA;小巧阑干边&#xA;刚抽出的花芽如玉簪，&#xA;那是羞红的芍药&#xA;正暗自结苞含情。"
+                       Text="{Binding Poetry.Translation, Converter={StaticResource TextIndent}}"
+                       IsVisible="{Binding Poetry.Translation, Converter={StaticResource StringToBool}}" />
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

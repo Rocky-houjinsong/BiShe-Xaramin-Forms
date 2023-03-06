@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToConnection.Views.ResultPage"
+             xmlns:d ="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc ="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable ="d"
+             xmlns:b ="clr-namespace:Behaviors;assembly=Behaviors"
+             xmlns:scroll ="clr-namespace:Xamarin.Forms.Extended;assembly=Xamarin.Forms.Extended.InfiniteScrolling"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             BindingContext="{Binding ResultPageViewModel, 
+                                Source={StaticResource ViewModelLocator}}">
+    <ContentPage.Behaviors>
+        <b:EventHandlerBehavior EventName="Appearing">
+            <b:ActionCollection>
+                <b:InvokeCommandAction Command="{Binding PageAppearingCommand}"/>
+            </b:ActionCollection>
+        </b:EventHandlerBehavior>
+    </ContentPage.Behaviors>
+    <!--移除设计器,就没有原来的d,mc标记了-->
+    <ContentPage.Content>
+        <ListView ItemsSource="{Binding PoetryCollection}">
+            <ListView.Behaviors>
+                <scroll:InfiniteScrollBehavior/>
+            </ListView.Behaviors>
+            <!--<d:ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </d:ListView.ItemsSource>-->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Name}"
+                              Detail="{Binding Snippet}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <!--注脚-->
+            <ListView.Footer>
+                <StackLayout Padding="8">
+                    <Label 
+                        Text="{Binding Status}"
+                        HorizontalOptions="Center" />
+                </StackLayout>
+            </ListView.Footer>
+        </ListView>
+    </ContentPage.Content>
+</ContentPage>
