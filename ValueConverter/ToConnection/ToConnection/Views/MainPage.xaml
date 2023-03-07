@@ -11,7 +11,8 @@
         <NavigationPage>
             <x:Arguments>
                 <!--修改地方-->
-                <views:TestPage />
+                <!-- <views:TestPage /> -->
+                <views:ResultPage />
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>
