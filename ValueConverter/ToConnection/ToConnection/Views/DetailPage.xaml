@@ -5,17 +5,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              xmlns:ls="clr-namespace:ToConnection.Services;assembly=ToConnection"
-             
              xmlns:lc="clr-namespace:ToConnection.Converters;assembly=ToConnection"
+             
              BindingContext="{Binding DetailPageViewModel,Source={StaticResource ViewModelLocator}}"
              ls:NavigationContext.NavigationParameter="{Binding Poetry}"
              x:Class="ToConnection.Views.DetailPage"
              Title="诗词详情页">
-    <!--xmlns:behaviors="clr-namespace:Behaviors;assembly=Behaviors"-->
+    
     <!--<ContentPage.Behaviors>
         <behaviors:EventHandlerBehavior EventName="Appearing">
             <behaviors:ActionCollection>
-                <behaviors:InvokeCommandAction Command="{Binding PageAppearingCommand}" />
+                <behaviors:InvokeCommandAction Command="{Binding PageAppearingCommand}"/>
             </behaviors:ActionCollection>
         </behaviors:EventHandlerBehavior>
     </ContentPage.Behaviors>-->
@@ -24,6 +24,7 @@
             <!--<lc:StringToBoolSourceConverter x:Key="StringToBool" />-->
             <lc:LayoutToTextAlignmentConverter x:Key="LayoutToAlignment" /> <!--布局属性 转为 文本布局转换器  -->
             <lc:TextIndentConverter x:Key="PoetryIndent" />     <!--文本局中转换器-->
+            
             <!--<lc:TextIndentConverter x:Key="TextIndent" />
             <lc:NegativeBoolConverter x:Key="Negative" />
             <lc:FavoriteConverter x:Key="Favorite" />-->

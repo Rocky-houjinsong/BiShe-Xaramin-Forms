@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToConnection.Models
+﻿namespace ToConnection.Models
 {
     public class Item
     {

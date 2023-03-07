@@ -7,9 +7,14 @@
              mc:Ignorable ="d"
              xmlns:b ="clr-namespace:Behaviors;assembly=Behaviors"
              xmlns:scroll ="clr-namespace:Xamarin.Forms.Extended;assembly=Xamarin.Forms.Extended.InfiniteScrolling"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+            
+             xmlns:converters="clr-namespace:ToConnection.Converters;assembly=ToConnection"
              BindingContext="{Binding ResultPageViewModel, 
                                 Source={StaticResource ViewModelLocator}}">
+    
+    <ContentPage.Resources>
+        <converters:ItemTappedEventArgsToPoetryConverter x:Key="ItemToPoetry" />
+    </ContentPage.Resources>
     <ContentPage.Behaviors>
         <b:EventHandlerBehavior EventName="Appearing">
             <b:ActionCollection>
@@ -22,6 +27,12 @@
         <ListView ItemsSource="{Binding PoetryCollection}">
             <ListView.Behaviors>
                 <scroll:InfiniteScrollBehavior/>
+                <b:EventHandlerBehavior EventName="ItemTapped">
+                    <b:ActionCollection>
+                        <b:InvokeCommandAction Command="{Binding PoetryTappedCommand}"
+                                               Converter="{StaticResource ItemToPoetry}" />
+                    </b:ActionCollection>
+                </b:EventHandlerBehavior>
             </ListView.Behaviors>
             <!--<d:ListView.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
