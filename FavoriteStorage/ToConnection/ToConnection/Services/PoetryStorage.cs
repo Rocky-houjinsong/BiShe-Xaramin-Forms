@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using SQLite;
 using ToConnection.Models;
@@ -26,7 +25,6 @@ namespace ToConnection.Services
                     .LocalApplicationData), DbName);
 
         /// <summary>
-        /// 打开数据库连接
         /// 打开数据库连接
         /// </summary>
         private SQLiteAsyncConnection _connection;
