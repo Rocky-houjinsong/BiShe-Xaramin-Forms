@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace ToConnection.Services
 {
@@ -16,7 +13,8 @@ namespace ToConnection.Services
         /// </summary>
         public static readonly BindableProperty NavigationParameterProperty =
             BindableProperty.CreateAttached("NavigationParameter",
-                typeof(object),typeof(NavigationContext),null,BindingMode.OneWayToSource);
+                typeof(object), typeof(NavigationContext), null, BindingMode.OneWayToSource);
+
         /// <summary>
         /// 设置导航参数.
         /// </summary>

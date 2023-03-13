@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using ToConnection.Models;
 
@@ -17,17 +14,20 @@ namespace ToConnection.Services
         /// </summary>
         /// <returns></returns>
         Task InitializeAsync();
+
         /// <summary>
         /// 收藏存储是否初始化.
         /// </summary>
         /// <returns></returns>
         bool IsInitialized();
+
         /// <summary>
         /// 获得诗词的收藏信息.
         /// </summary>
         /// <param name="poetryId">诗词Id.</param> 
         /// <returns></returns>
         Task<Favorite> GetFavoriteAsync(int poetryId);
+
         /// <summary>
         /// 保存收藏信息.
         /// </summary>
@@ -37,6 +37,7 @@ namespace ToConnection.Services
         /// <param name="favorite">收藏.</param>
         /// <returns></returns>
         Task SaveFavoriteAsync(Favorite favorite);
+
         /// <summary>
         /// 获得所有收藏信息.
         /// </summary>
@@ -45,7 +46,19 @@ namespace ToConnection.Services
         /// </remarks>
         /// <returns></returns>
         Task<IList<Favorite>> GetFavoritesAsync();
+
+        // /// <summary>
+        // /// 所获得的所有收藏项, 包括收藏与 非收藏
+        // /// </summary>
+        // /// <returns></returns>
+        // Task<IList<Favorite>> GetFavoriteItemsAsync();
+
+        // /// <summary>
+        // /// 收藏存储已更新事件
+        // /// </summary>
+        // event EventHandler<FavoriteUpdateEventArgs> Updated;
     }
+
     /// <summary>
     /// 收藏存储常量
     /// </summary>
@@ -55,10 +68,12 @@ namespace ToConnection.Services
         /// 收藏数据库版本号.
         /// </summary>
         public const int Version = 1;
+
         /// <summary>
         /// 默认的收藏数据库版本号.
         /// </summary>
         public const int DefaultVersion = 0;
+
         /// <summary>
         /// 收藏数据库版本号键.
         /// </summary>
@@ -66,4 +81,13 @@ namespace ToConnection.Services
             nameof(FavoriteStorageConstants) + "." + nameof(Version);
     }
 
+    // public class FavoriteStorageUpdatedEventArgs : DeferredEventArgs
+    // {
+    //     public Favorite UpdatedFavorite { get; }
+    //
+    //     public FavoriteStorageUpdatedEventArgs(Favorite favorite)
+    //     {
+    //         UpdatedFavorite = favorite;
+    //     }
+    // }
 }

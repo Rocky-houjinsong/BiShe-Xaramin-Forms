@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using ToConnection.ViewModels;
+﻿using ToConnection.ViewModels;
 using Xamarin.Forms;
 
 namespace ToConnection.Views

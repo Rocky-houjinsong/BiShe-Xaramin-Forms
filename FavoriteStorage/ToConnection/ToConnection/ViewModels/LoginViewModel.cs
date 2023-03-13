@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ToConnection.Views;
+﻿using ToConnection.Views;
 using Xamarin.Forms;
 
 namespace ToConnection.ViewModels

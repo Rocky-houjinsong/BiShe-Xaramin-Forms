@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
-using ToConnection.Services;
-using Xamarin.Forms;
+﻿using GalaSoft.MvvmLight;
+
 
 namespace ToConnection.ViewModels
 {

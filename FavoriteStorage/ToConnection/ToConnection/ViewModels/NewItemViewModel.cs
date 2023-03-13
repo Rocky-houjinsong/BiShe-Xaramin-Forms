@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
 using ToConnection.Models;
 using Xamarin.Forms;
 
@@ -23,7 +20,7 @@ namespace ToConnection.ViewModels
         private bool ValidateSave()
         {
             return !String.IsNullOrWhiteSpace(text)
-                && !String.IsNullOrWhiteSpace(description);
+                   && !String.IsNullOrWhiteSpace(description);
         }
 
         public string Text

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using ToConnection.Models;
 using Xamarin.Forms;
 
 namespace ToConnection.ViewModels
@@ -28,10 +26,7 @@ namespace ToConnection.ViewModels
 
         public string ItemId
         {
-            get
-            {
-                return itemId;
-            }
+            get { return itemId; }
             set
             {
                 itemId = value;

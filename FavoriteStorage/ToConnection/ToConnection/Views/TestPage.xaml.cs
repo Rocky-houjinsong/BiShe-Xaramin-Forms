@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ToConnection.Models;
 using ToConnection.Services;
 using Xamarin.Forms;
@@ -17,26 +13,26 @@ namespace ToConnection.Views
         {
             InitializeComponent();
         }
+
         private static ContentPageActivationService contentPageActivationService =
             new ContentPageActivationService();
 
         private static ContentNavigationService contentNavigationService =
             new ContentNavigationService(contentPageActivationService);
 
-       
 
         private async void Button_OnClicked(object sender, EventArgs e)
         {
             // TODO 测试性质 每次都new ,内存泄漏
             /*var cns = new ContentNavigationService(new ContentPageActivationService());*/
-           // await cns.NavigateToAsync(ContentNavigationConstants.AboutPage);
+            // await cns.NavigateToAsync(ContentNavigationConstants.AboutPage);
 
-             await contentNavigationService.NavigateToAsync(ContentNavigationConstants.DetailPage,new Poetry
-             {
-                 Name = "滁州西涧",
-                 Content = "2023年3月6日",
-                 Layout = Poetry.IndentLayout
-             });
+            await contentNavigationService.NavigateToAsync(ContentNavigationConstants.DetailPage, new Poetry
+            {
+                Name = "滁州西涧",
+                Content = "2023年3月6日",
+                Layout = Poetry.IndentLayout
+            });
         }
     }
 }

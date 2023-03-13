@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using ToConnection.Views;
+
 
 namespace ToConnection.Services
 {
@@ -17,6 +16,7 @@ namespace ToConnection.Services
         /// <param name="pageKey">页面键</param>
         /// <returns></returns>
         Task NavigateToAsync(string pageKey);
+
         /// <summary>
         ///导航到页面.   
         /// </summary>
@@ -36,7 +36,9 @@ namespace ToConnection.Services
         /// 诗词详情页
         /// </summary>
         public const string AboutPage = nameof(Views.AboutPage);
+
         public const string DetailPage = nameof(Views.DetailPage);
+
         /// <summary>
         /// 页面键 - 页面类型字典
         /// </summary>

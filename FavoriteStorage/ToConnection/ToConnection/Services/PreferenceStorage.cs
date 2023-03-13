@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Essentials;
+﻿using Xamarin.Essentials;
 
 namespace ToConnection.Services
 {
@@ -20,6 +17,5 @@ namespace ToConnection.Services
 
         public int Get(string key, int defaultValue) =>
             Preferences.Get(key, defaultValue);
-
     }
 }

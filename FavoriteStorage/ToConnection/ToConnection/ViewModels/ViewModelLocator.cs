@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GalaSoft.MvvmLight.Ioc;
+﻿using GalaSoft.MvvmLight.Ioc;
 using ToConnection.Services;
 
 namespace ToConnection.ViewModels
@@ -22,8 +19,8 @@ namespace ToConnection.ViewModels
         {
             /*SimpleIoc.Default.Register<MainPageViewModel>();
             SimpleIoc.Default.Register<AnotherPageViewModel>();
-            SimpleIoc.Default.Register<DataBasePageViewModel>();
-            SimpleIoc.Default.Register<IFavoriteStorage, FavoriteStorage>();*/
+            SimpleIoc.Default.Register<DataBasePageViewModel>();*/
+            SimpleIoc.Default.Register<IFavoriteStorage, FavoriteStorage>();
             SimpleIoc.Default.Register<IPoetryStorage, PoetryStorage>();
             SimpleIoc.Default.Register<ResultPageViewModel>();
             SimpleIoc.Default.Register<IPreferenceStorage, PreferenceStorage>();
@@ -31,8 +28,9 @@ namespace ToConnection.ViewModels
             SimpleIoc.Default.Register<DetailPageViewModel>();
             // 导航服务,从结果页到详情页的注册
             SimpleIoc.Default.Register<IContentNavigationService, ContentNavigationService>();
-            SimpleIoc.Default.Register<IContentPageActivationService, ContentPageActivationService>();  
+            SimpleIoc.Default.Register<IContentPageActivationService, ContentPageActivationService>();
         }
+
         // 借助字段MainPageViewModel进行获取该实例中的值.  
         /*public MainPageViewModel MainPageViewModel =>
             SimpleIoc.Default.GetInstance<MainPageViewModel>();
@@ -47,6 +45,7 @@ namespace ToConnection.ViewModels
         /// </summary>
         public ResultPageViewModel ResultPageViewModel =>
             SimpleIoc.Default.GetInstance<ResultPageViewModel>();
+
         /// <summary>
         /// 诗词详情页ViewModel.
         /// </summary>

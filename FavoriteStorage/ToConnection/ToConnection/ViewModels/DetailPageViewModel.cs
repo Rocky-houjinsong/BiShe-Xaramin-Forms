@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -58,13 +56,14 @@ namespace ToConnection.ViewModels
         /// </summary>
         public RelayCommand PageAppearingCommand =>
             _pageAppearingCommand ?? (_pageAppearingCommand =
-                new RelayCommand(async () => await PageAppearingCommandFunction()));
+                // ReSharper disable once AsyncVoidLambda
+                new RelayCommand(async () =>
+                    await PageAppearingCommandFunction()));
 
         public async Task PageAppearingCommandFunction()
         {
             //新收藏,才会执行
-
-            if (!_isNewPoetry)
+            if (_isNewPoetry) //TODO: 这里应该是 !_isNewPoetry
             {
                 return;
             }
@@ -72,7 +71,42 @@ namespace ToConnection.ViewModels
             //是新诗,先标记为false,即不是新诗
             _isNewPoetry = false;
             //读取 收藏
-            Favorite = await _favoriteStorage.GetFavoriteAsync(Poetry.Id);
+            //TODO:优化 
+            /*先读取 数据库中,原始的收藏状态;
+             * 将收藏状态保存到 原始收藏状态的属性汇中去
+             * 然后再更新Favorite属性
+             */
+            var favorite = await _favoriteStorage.GetFavoriteAsync(Poetry.Id) ??
+                           new Favorite { PoetryId = Poetry.Id };
+            _isFavorite = favorite.IsFavorite;
+            Favorite = favorite;
+        }
+
+        /// <summary>
+        /// 收藏切换命令.
+        /// </summary>
+        private RelayCommand _favoriteToggledCommand;
+
+        /// <summary>
+        /// 收藏切换命令.
+        /// </summary>
+        public RelayCommand FavoriteToggledCommand =>
+            _favoriteToggledCommand ?? (_favoriteToggledCommand =
+                new RelayCommand(async () => await FavoriteToggledCommandFunction()));
+
+        public async Task FavoriteToggledCommandFunction()
+        {
+            //TODO 判断更新后的 ToggleCommand 和原始的一样不,一样就跳出,说明用户没有修改收藏状态
+            //一样执行,不一样就不执行
+            if (Favorite.IsFavorite == _isFavorite)
+            {
+                return;
+            }
+
+            //第二次就不起作用,需要 更新该字段
+            _isFavorite = Favorite.IsFavorite;
+
+            await _favoriteStorage.SaveFavoriteAsync(Favorite);
         }
 
 
@@ -93,5 +127,11 @@ namespace ToConnection.ViewModels
         /// 是否是新诗词.
         /// </summary>
         private bool _isNewPoetry;
+
+        /// <summary>
+        /// 诗词从数据库中的原始收藏状态;
+        /// </summary>
+        /// <remarks>应为私有,但为单元测试,所以公开</remarks>
+        public bool _isFavorite;
     }
 }

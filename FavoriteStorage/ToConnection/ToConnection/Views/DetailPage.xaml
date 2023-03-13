@@ -6,19 +6,19 @@
              mc:Ignorable="d"
              xmlns:ls="clr-namespace:ToConnection.Services;assembly=ToConnection"
              xmlns:lc="clr-namespace:ToConnection.Converters;assembly=ToConnection"
-             
+             xmlns:b="clr-namespace:Behaviors;assembly=Behaviors"
              BindingContext="{Binding DetailPageViewModel,Source={StaticResource ViewModelLocator}}"
              ls:NavigationContext.NavigationParameter="{Binding Poetry}"
              x:Class="ToConnection.Views.DetailPage"
              Title="诗词详情页">
     
-    <!--<ContentPage.Behaviors>
-        <behaviors:EventHandlerBehavior EventName="Appearing">
-            <behaviors:ActionCollection>
-                <behaviors:InvokeCommandAction Command="{Binding PageAppearingCommand}"/>
-            </behaviors:ActionCollection>
-        </behaviors:EventHandlerBehavior>
-    </ContentPage.Behaviors>-->
+    <ContentPage.Behaviors>
+        <b:EventHandlerBehavior EventName="Appearing">
+            <b:ActionCollection>
+                <b:InvokeCommandAction Command="{Binding PageAppearingCommand}"/>
+            </b:ActionCollection>
+        </b:EventHandlerBehavior>
+    </ContentPage.Behaviors>
     <ContentPage.Resources>
         <ResourceDictionary>
             <!--<lc:StringToBoolSourceConverter x:Key="StringToBool" />-->
@@ -57,6 +57,28 @@
                        HorizontalTextAlignment="{Binding Poetry.Layout, Converter={StaticResource LayoutToAlignment}}"
                        d:Text="柳暗花明春事深。&#xA;小阑红芍药，已抽簪。&#xA;雨馀风软碎鸣禽。&#xA;迟迟日，犹带一分阴。"
                        Text="{Binding Poetry, Converter={StaticResource PoetryIndent}}" />
+                <!--<Switch HorizontalOptions="Center"
+                        Margin="0,0,0,8"
+                        IsToggled="{Binding Favorite.IsFavorite }">
+                    <b:EventHandlerBehavior EventName="Toggled">
+                        <b:ActionCollection>
+                            <b:InvokeCommandAction Command="{Binding FavoriteToggledCommand}"/>
+                        </b:ActionCollection>
+                    </b:EventHandlerBehavior>
+                </Switch>-->
+                <Switch d:IsToggled="true"
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,8"
+                        IsToggled="{Binding Favorite.IsFavorite}">
+                    <Switch.Behaviors>
+                        <b:EventHandlerBehavior EventName="Toggled">
+                            <b:ActionCollection>
+                                <b:InvokeCommandAction
+                                    Command="{Binding FavoriteToggledCommand}" />
+                            </b:ActionCollection>
+                        </b:EventHandlerBehavior>
+                    </Switch.Behaviors>
+                </Switch>
                 <!--Text="{Binding Poetry.Content}" />-->
                 <!--<StackLayout Margin="0,0,0,8"
                              HorizontalOptions="Center"

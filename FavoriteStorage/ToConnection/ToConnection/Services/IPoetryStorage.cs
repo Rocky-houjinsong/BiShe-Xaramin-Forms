@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using ToConnection.Models;
 
@@ -17,11 +16,13 @@ namespace ToConnection.Services
         /// </summary>
         /// <returns></returns>
         Task InitializeAsync();
+
         /// <summary>
         /// 诗词存储是否已经初始化.
         /// </summary>
         /// <returns></returns>
         bool IsInitiallized();
+
         /// <summary>
         /// 获取一个诗词
         /// </summary>
@@ -38,8 +39,8 @@ namespace ToConnection.Services
         /// <returns></returns>
         Task<IList<Poetry>> GetPoetriesAsync(
             Expression<Func<Poetry, bool>> where, int skip, int take);
-
     }
+
     /// <summary>
     /// 诗词存储常量.
     /// </summary>
@@ -49,10 +50,12 @@ namespace ToConnection.Services
         /// 诗词数据库版本号
         /// </summary>
         public const int Version = 1;
+
         /// <summary>
         /// 默认的诗词数据库版本号.
         /// </summary>
         public const int DefaultVersion = 0;
+
         /// <summary>
         /// 诗词数据库版本号键
         /// </summary>

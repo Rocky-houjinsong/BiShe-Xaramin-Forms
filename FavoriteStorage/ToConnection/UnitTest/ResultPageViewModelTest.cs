@@ -24,6 +24,7 @@ namespace ValueConverter.UnitTest
         public static void RemoveDatabaseFile() =>
             //  File.Delete(PoetryStorage.PoetryDbPath);
             PoetryStorageHelper.RemoveDatabaseFile(); //通过帮助类进行管理删除操作
+
         /// <summary>
         /// 测试诗词集合.
         /// </summary>
@@ -37,7 +38,7 @@ namespace ValueConverter.UnitTest
             var poetryStorage =
                 await PoetryStorageHelper.GetInitializedPoetryStorageAsync();
 
-            var resultPageViewModel = new ResultPageViewModel(poetryStorage,null);
+            var resultPageViewModel = new ResultPageViewModel(poetryStorage, null, null);
             resultPageViewModel.Where = where;
             //监控status变化情况,自动的不停的变化,测试很麻烦, 需要一个list进行记录
             // 关联 propertychange事件,利用mvvm机制
@@ -87,12 +88,10 @@ namespace ValueConverter.UnitTest
 
             var poetryToTap = new Poetry();
             var resultPageViewModel =
-                new ResultPageViewModel(null, mockContentNavigationService);
+                new ResultPageViewModel(null, mockContentNavigationService, null);
             await resultPageViewModel.PoetryTappedCommandFunction(poetryToTap);
             contentNavigationServiceMock.Verify(
                 p => p.NavigateToAsync(ContentNavigationConstants.DetailPage, poetryToTap), Times.Once);
         }
-
-
     }
 }

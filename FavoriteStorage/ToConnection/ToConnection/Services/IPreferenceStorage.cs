@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ToConnection.Services
+﻿namespace ToConnection.Services
 {
     /// <summary>
     ///偏好存储接口.
@@ -15,6 +11,7 @@ namespace ToConnection.Services
         void Set(string key, string value);
 
         void Set(string key, int value);
+
         /// <param name="key">Preference key.</param>
         /// <param name="defaultValue">Default value to return if the key does not exist.</param>
         /// <summary>Gets the value for a given key, or the default specified if the key does not exist.</summary>

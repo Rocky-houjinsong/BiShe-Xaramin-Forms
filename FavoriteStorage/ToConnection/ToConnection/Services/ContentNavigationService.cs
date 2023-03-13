@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ToConnection.Views;
 using Xamarin.Forms;
 
@@ -11,12 +8,13 @@ namespace ToConnection.Services
     {
         //**************** 私有变量
         private MainPage _mainPage;
-        
+
 
         /// <summary>
         /// 内容页激活服务.
         /// </summary>
         private IContentPageActivationService _contentPageActivationService;
+
         //****************继承方法
         /// <summary>
         /// 导航到页面
@@ -25,6 +23,7 @@ namespace ToConnection.Services
         /// <returns></returns>
         public async Task NavigateToAsync(string pageKey) =>
             await MainPage.Navigation.PushAsync(_contentPageActivationService.Activate(pageKey));
+
         /// <summary>
         /// 带参数,导航到页面.
         /// </summary>
@@ -46,6 +45,7 @@ namespace ToConnection.Services
         //**************公开方法;
         public MainPage MainPage =>
             _mainPage ?? (_mainPage = Application.Current.MainPage as MainPage);
+
         /// <summary>
         /// 内容导航服务
         /// </summary>

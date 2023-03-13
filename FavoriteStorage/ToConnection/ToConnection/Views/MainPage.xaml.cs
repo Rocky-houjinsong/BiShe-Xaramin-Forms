@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.ComponentModel;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
 
 namespace ToConnection.Views
 {
     // [XamlCompilation(XamlCompilationOptions.Compile)]
     [DesignTimeVisible(false)]
-    public partial class MainPage:MasterDetailPage
+#pragma warning disable CS0618 //   “MasterDetailPage”已过时:“MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.”
+    public partial class MainPage : MasterDetailPage
+#pragma warning restore CS0618 // “MasterDetailPage”已过时:“MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.”
     {
         public MainPage()
         {
