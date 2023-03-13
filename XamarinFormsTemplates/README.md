@@ -1,0 +1,3 @@
+# XamarinFormsTemplates
+
+使用Xamarin.Forms原始的Master-Detail以及Tabbed模板创建的项目。
