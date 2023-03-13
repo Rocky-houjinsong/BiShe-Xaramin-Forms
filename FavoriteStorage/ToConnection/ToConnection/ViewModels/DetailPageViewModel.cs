@@ -17,7 +17,11 @@ namespace ToConnection.ViewModels
         public Poetry Poetry
         {
             get => _poetry;
-            set => Set(nameof(Poetry), ref _poetry, value);
+            set
+            {
+                Set(nameof(Poetry), ref _poetry, value);
+                _isNewPoetry = true;
+            }
         }
 
         /// <summary>
@@ -26,11 +30,7 @@ namespace ToConnection.ViewModels
         public Favorite Favorite
         {
             get => _favorite;
-            set
-            {
-                Set(nameof(Favorite), ref _favorite, value);
-                _isNewPoetry = true;
-            }
+            set => Set(nameof(Favorite), ref _favorite, value);
         }
 
 
@@ -63,7 +63,7 @@ namespace ToConnection.ViewModels
         public async Task PageAppearingCommandFunction()
         {
             //新收藏,才会执行
-            if (_isNewPoetry) //TODO: 这里应该是 !_isNewPoetry
+            if (!_isNewPoetry) //TODO: 这里应该是 !_isNewPoetry
             {
                 return;
             }
@@ -132,6 +132,6 @@ namespace ToConnection.ViewModels
         /// 诗词从数据库中的原始收藏状态;
         /// </summary>
         /// <remarks>应为私有,但为单元测试,所以公开</remarks>
-        public bool _isFavorite;
+        private bool _isFavorite;
     }
 }
