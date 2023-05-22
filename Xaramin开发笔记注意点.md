@@ -1631,7 +1631,7 @@ resharper快捷键 `Shift + Ctrl + 空格`  触发智能提示;
 >    {
 >        ((ResultPageViewModel)BindingContext).PageAppearingCommand.Execute(null);
 >    } // 强制类型转换, 调用 该方法 
->                   
+>                      
 >    ```
 
 :star: 问题如下
